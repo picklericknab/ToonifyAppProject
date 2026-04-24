@@ -7,6 +7,7 @@ import 'featured_screen.dart';
 import 'popular_screen.dart';
 import 'romance_screen.dart';
 import 'action_screen.dart';
+import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -206,9 +207,14 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {},
             ),
             IconButton(
-              icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
-              onPressed: () {},
-            ),
+            icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HistoryScreen()),
+              );
+            },
+          ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.grey, size: 28),
               onPressed: () {},

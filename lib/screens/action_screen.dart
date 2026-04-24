@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:toonifyapp/screens/history_screen.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
 
@@ -13,34 +14,19 @@ class ActionScreen extends StatefulWidget {
 }
 
 class _ActionScreenState extends State<ActionScreen> {
-  // =============================================
-  // USBA KINI PARA MABAG-O ANG GIDAK-ON SA CARD
+
+  // Box variables ari lang usba
   final double cardBorderRadius = 16.0;
   final double cardPadding = 12.0;
   final double cardSpacing = 14.0;
-  // =============================================
-
-  // =============================================
-  // USBA KINI PARA MABAG-O ANG COVER IMAGE SA CARD
   final double coverWidth = 85.0;
   final double coverHeight = 85.0;
   final double coverBorderRadius = 10.0;
-  // =============================================
-
-  // =============================================
-  // USBA KINI PARA MABAG-O ANG TEXT SIZES
   final double titleFontSize = 17.0;
   final double descFontSize = 12.5;
-  // =============================================
-
-  // =============================================
-  // USBA KINI PARA MABAG-O ANG DIVIDER SA TALIWALA
-  // SA TITLE UG DESCRIPTION
   final double dividerThickness = 0.8;
   final double dividerVerticalPadding = 6.0;
-  // =============================================
 
-  // Pagination variables
   static const int _pageSize = 20;
   int _offset = 0;
   bool _hasMore = true;
@@ -49,7 +35,6 @@ class _ActionScreenState extends State<ActionScreen> {
   bool isLoading = true;
   bool isLoadingMore = false;
 
-  // ScrollController para ma-detect kung naa na ta sa ubos
   late ScrollController _scrollController;
 
   // Action tag ID sa MangaDex
@@ -60,7 +45,6 @@ class _ActionScreenState extends State<ActionScreen> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    // I-detect kung naa na sa ubos para mag-load og bag-o
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 200 &&
@@ -89,14 +73,12 @@ class _ActionScreenState extends State<ActionScreen> {
         return 'https://uploads.mangadex.org/covers/$mangaId/$fileName.256.jpg';
       }
     } catch (e) {
-      debugPrint('Sayop sa pagkuha sa cover: $e');
+      debugPrint('Wrong cover: $e');
     }
     return null;
   }
 
-  // Kuhaon ang Action manga — may pagination
   Future<void> fetchActionManga() async {
-    // Dili mag-fetch kung nag-load na o walay labot
     if (isLoadingMore || !_hasMore) return;
 
     if (mounted) {
@@ -134,7 +116,6 @@ class _ActionScreenState extends State<ActionScreen> {
           final mangaId = manga['id'];
           final attributes = manga['attributes'];
 
-          // Kuhaon ang English description, i-summarize sa 2 sentences
           String fullDesc = attributes['description']['en'] ??
               (attributes['description'].isNotEmpty
                   ? attributes['description'].values.first
@@ -166,7 +147,6 @@ class _ActionScreenState extends State<ActionScreen> {
           setState(() {
             actionList.addAll(results);
             _offset += _pageSize;
-            // Kung na-reach na ang total, walay labot nga i-load
             _hasMore = _offset < total;
             isLoading = false;
             isLoadingMore = false;
@@ -174,7 +154,7 @@ class _ActionScreenState extends State<ActionScreen> {
         }
       }
     } catch (e) {
-      debugPrint('Sayop sa pagkuha sa action manga: $e');
+      debugPrint('Wrong action manga: $e');
       if (mounted) {
         setState(() {
           isLoading = false;
@@ -184,7 +164,6 @@ class _ActionScreenState extends State<ActionScreen> {
     }
   }
 
-  // Mao ni ang usa ka manga card
   Widget _buildMangaCard(Map<String, dynamic> manga) {
     return GestureDetector(
       onTap: () {
@@ -208,7 +187,6 @@ class _ActionScreenState extends State<ActionScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Cover image sa wala
             ClipRRect(
               borderRadius: BorderRadius.circular(coverBorderRadius),
               child: manga['coverUrl'] != null
@@ -245,7 +223,6 @@ class _ActionScreenState extends State<ActionScreen> {
                     ),
             ),
             const SizedBox(width: 14),
-            // Title ug description sa tuo
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,7 +239,6 @@ class _ActionScreenState extends State<ActionScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  // Divider sa taliwala sa title ug description
                   Padding(
                     padding: EdgeInsets.symmetric(
                         vertical: dividerVerticalPadding),
@@ -319,7 +295,12 @@ class _ActionScreenState extends State<ActionScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                );
+              },
             ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.grey, size: 28),
@@ -400,7 +381,7 @@ class _ActionScreenState extends State<ActionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      Transform.translate( // Mao ni ang Action header
+                      Transform.translate(
                         offset: const Offset(-14, -25),
                         child: const Text(
                           'Action',
@@ -435,7 +416,6 @@ class _ActionScreenState extends State<ActionScreen> {
                     ],
                   ),
                 ),
-                // Mao ni ang lista sa manga cards
                 Expanded(
                   child: isLoading
                       ? const Center(
@@ -448,7 +428,6 @@ class _ActionScreenState extends State<ActionScreen> {
                           controller: _scrollController,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 8),
-                          // +1 para sa loading indicator o end message sa ubos
                           itemCount: actionList.length + 1,
                           itemBuilder: (context, index) {
                             if (index == actionList.length) {

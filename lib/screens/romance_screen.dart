@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:toonifyapp/screens/history_screen.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
 
@@ -295,7 +296,12 @@ class _RomanceScreenState extends State<RomanceScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                );
+              },
             ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.grey, size: 28),

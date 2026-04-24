@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'app_reader.dart';
+import '../services/history_service.dart';
 
 class AppDescription extends StatefulWidget {
   
@@ -50,6 +51,10 @@ class _AppDescriptionState extends State<AppDescription> {
   final ScrollController _descScrollController = ScrollController();
   int savedChapterIndex = 0;
   double savedScrollOffset = 0.0;
+
+  // Para sa history tracking
+  String savedChapterNumber = '1';
+  final HistoryService _historyService = HistoryService();
 
   @override
   void initState() {
@@ -102,6 +107,13 @@ class _AppDescriptionState extends State<AppDescription> {
   }
 
   Future<void> _openReader() async {
+    _historyService.addToHistory(
+      mangaId: widget.mangaId,
+      title: widget.title,
+      coverUrl: widget.coverUrl,
+      chapterNumber: savedChapterNumber,
+    );
+
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -114,12 +126,19 @@ class _AppDescriptionState extends State<AppDescription> {
       ),
     );
 
-    // If nag scroll unsa na chpater kay ari ma save if mag ask si sir
+    // If nag scroll unsa na chapter kay ari ma save if mag ask si sir
     if (result != null && result is Map) {
       setState(() {
         savedChapterIndex = result['chapterIndex'] ?? 0;
         savedScrollOffset = result['scrollOffset'] ?? 0.0;
+        savedChapterNumber = result['chapterNumber'] ?? '1';
       });
+
+      // e update ang chapter sa history
+      _historyService.updateChapter(
+        mangaId: widget.mangaId,
+        chapterNumber: savedChapterNumber,
+      );
     }
   }
 

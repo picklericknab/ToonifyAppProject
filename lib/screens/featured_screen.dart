@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:toonifyapp/screens/history_screen.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
+import 'romance_screen.dart';
+import 'action_screen.dart';
+import 'horror_screen.dart';
 
 class FeaturedScreen extends StatefulWidget {
   const FeaturedScreen({super.key});
@@ -237,7 +241,12 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                );
+              },
             ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.grey, size: 28),
@@ -354,11 +363,29 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                       Row( 
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          _GenreChip(label: 'Romance'),
+                          _GenreChip(
+                            label: 'Romance',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const RomanceScreen()),
+                            ),
+                          ),
                           const SizedBox(width: 40),
-                          _GenreChip(label: 'Action'),
+                          _GenreChip(
+                            label: 'Action',
+                            onTap:() => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const ActionScreen()),
+                            ),
+                          ),
                           const SizedBox(width: 40),
-                          _GenreChip(label: 'Horror'),
+                          _GenreChip(
+                            label: 'Horror',
+                            onTap:() => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const HorrorScreen()),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 24), // Space sa ubos sa chips
@@ -561,23 +588,27 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
 // Mao ni ang genre buttons sa romance etc
 class _GenreChip extends StatelessWidget {
   final String label;
+  final VoidCallback? onTap;
 
-  const _GenreChip({required this.label});
+  const _GenreChip({required this.label, this.onTap}); 
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 5, 0, 0),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
+    return GestureDetector( 
+      onTap: onTap,  
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 5, 0, 0),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
