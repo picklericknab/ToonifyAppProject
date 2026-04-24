@@ -275,7 +275,7 @@ class RegisterScreen extends StatelessWidget {
   }
 }
 
-class MoonPainter extends CustomPainter { // Mao ni ang Moon
+class MoonPainter extends CustomPainter { // Mao ni ang Moon basta
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.white.withOpacity(0.85);
