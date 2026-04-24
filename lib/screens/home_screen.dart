@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:toonifyapp/screens/horror_screen.dart';
 import 'featured_screen.dart';
 import 'popular_screen.dart';
 import 'romance_screen.dart';
@@ -339,7 +340,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           const SizedBox(width: 40),
-                          _GenreChip(label: 'Horror'),
+                          _GenreChip(
+                            label: 'Horror',
+                            onTap:() => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const HorrorScreen())
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 24), 

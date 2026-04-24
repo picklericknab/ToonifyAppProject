@@ -5,14 +5,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
 
-class RomanceScreen extends StatefulWidget {
-  const RomanceScreen({super.key});
+class HorrorScreen extends StatefulWidget {
+  const HorrorScreen({super.key});
 
   @override
-  State<RomanceScreen> createState() => _RomanceScreenState();
+  State<HorrorScreen> createState() => _HorrorScreenState();
 }
 
-class _RomanceScreenState extends State<RomanceScreen> {
+class _HorrorScreenState extends State<HorrorScreen> {
   // =============================================
   // USBA KINI PARA MABAG-O ANG GIDAK-ON SA CARD
   final double cardBorderRadius = 16.0;
@@ -45,16 +45,16 @@ class _RomanceScreenState extends State<RomanceScreen> {
   int _offset = 0;
   bool _hasMore = true;
 
-  List<Map<String, dynamic>> romanceList = [];
+  List<Map<String, dynamic>> horrorList = [];
   bool isLoading = true;
   bool isLoadingMore = false;
 
   // ScrollController para ma-detect kung naa na ta sa ubos
   late ScrollController _scrollController;
 
-  // Romance tag ID sa MangaDex
-  static const String _romanceTagId =
-      '423e2eae-a7a2-4a8b-ac03-a8351462d71d';
+  // Horror tag ID sa MangaDex
+  static const String _horrorTagId =
+      'b29d6a3d-1569-4e7a-8caf-7557bc92cd5d';
 
   @override
   void initState() {
@@ -66,10 +66,10 @@ class _RomanceScreenState extends State<RomanceScreen> {
               _scrollController.position.maxScrollExtent - 200 &&
           !isLoadingMore &&
           _hasMore) {
-        fetchRomanceManga();
+        fetchHorrorManga();
       }
     });
-    fetchRomanceManga();
+    fetchHorrorManga();
   }
 
   @override
@@ -94,8 +94,8 @@ class _RomanceScreenState extends State<RomanceScreen> {
     return null;
   }
 
-  // Kuhaon ang Romance manga — may pagination
-  Future<void> fetchRomanceManga() async {
+  // Kuhaon ang Horror manga — may pagination
+  Future<void> fetchHorrorManga() async {
     // Dili mag-fetch kung nag-load na o walay labot
     if (isLoadingMore || !_hasMore) return;
 
@@ -115,7 +115,7 @@ class _RomanceScreenState extends State<RomanceScreen> {
           'https://api.mangadex.org/manga'
           '?limit=$_pageSize'
           '&offset=$_offset'
-          '&includedTags[]=$_romanceTagId'
+          '&includedTags[]=$_horrorTagId'
           '&includes[]=cover_art'
           '&contentRating[]=safe'
           '&hasAvailableChapters=true'
@@ -164,7 +164,7 @@ class _RomanceScreenState extends State<RomanceScreen> {
 
         if (mounted) {
           setState(() {
-            romanceList.addAll(results);
+            horrorList.addAll(results);
             _offset += _pageSize;
             // Kung na-reach na ang total, walay labot nga i-load
             _hasMore = _offset < total;
@@ -174,7 +174,7 @@ class _RomanceScreenState extends State<RomanceScreen> {
         }
       }
     } catch (e) {
-      debugPrint('Sayop sa pagkuha sa romance manga: $e');
+      debugPrint('Sayop sa pagkuha sa horror manga: $e');
       if (mounted) {
         setState(() {
           isLoading = false;
@@ -400,10 +400,10 @@ class _RomanceScreenState extends State<RomanceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      Transform.translate( // Mao ni ang Romance header
+                      Transform.translate( // Mao ni ang Horror header
                         offset: const Offset(-14, -25),
                         child: const Text(
-                          'Romance',
+                          'Horror',
                           style: TextStyle(
                             fontFamily: 'Georgia',
                             fontSize: 37,
@@ -449,10 +449,9 @@ class _RomanceScreenState extends State<RomanceScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 8),
                           // +1 para sa loading indicator o end message sa ubos
-                          itemCount: romanceList.length + 1,
+                          itemCount: horrorList.length + 1,
                           itemBuilder: (context, index) {
-                            if (index == romanceList.length) {
-                              // Ipakita ang loading o end message sa ubos
+                            if (index == horrorList.length) {
                               if (isLoadingMore) {
                                 return const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -482,7 +481,7 @@ class _RomanceScreenState extends State<RomanceScreen> {
                             }
                             return Padding(
                               padding: EdgeInsets.only(bottom: cardSpacing),
-                              child: _buildMangaCard(romanceList[index]),
+                              child: _buildMangaCard(horrorList[index]),
                             );
                           },
                         ),
