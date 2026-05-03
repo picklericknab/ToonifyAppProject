@@ -8,6 +8,7 @@ import 'home_screen.dart';
 import 'romance_screen.dart';
 import 'action_screen.dart';
 import 'horror_screen.dart';
+import 'search_screen.dart';
 
 class PopularScreen extends StatefulWidget {
   const PopularScreen({super.key});
@@ -289,30 +290,40 @@ class _PopularScreenState extends State<PopularScreen> {
                         ),
                       ),
                       const SizedBox(height: 45), // Space ubos sa header
-                      Container( 
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3D3D3D),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: const TextField(
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Search',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 14),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SearchScreen()),
+                          );
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3D3D3D),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: const Row(
+                            children: [
+                              SizedBox(width: 12),
+                              Icon(Icons.search, color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text(
+                                'Search',
+                                style: TextStyle(color: Colors.grey, fontSize: 16),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 20), // Space sa ubos sa search bar
-                      Row( 
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           _GenreChip(
                             label: 'Romance',
-                            onTap:() => Navigator.push(
+                            onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const RomanceScreen()),
                             ),
@@ -320,7 +331,7 @@ class _PopularScreenState extends State<PopularScreen> {
                           const SizedBox(width: 40),
                           _GenreChip(
                             label: 'Action',
-                            onTap:() => Navigator.push(
+                            onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const ActionScreen()),
                             ),
@@ -328,14 +339,14 @@ class _PopularScreenState extends State<PopularScreen> {
                           const SizedBox(width: 40),
                           _GenreChip(
                             label: 'Horror',
-                            onTap:() => Navigator.push(
+                            onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const HorrorScreen()),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24), 
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -425,12 +436,12 @@ class _GenreChip extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
 
-  const _GenreChip({required this.label, this.onTap}); 
+  const _GenreChip({required this.label, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( 
-      onTap: onTap,  
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
         decoration: BoxDecoration(

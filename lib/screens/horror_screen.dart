@@ -35,11 +35,23 @@ class _HorrorScreenState extends State<HorrorScreen> {
   bool isLoading = true;
   bool isLoadingMore = false;
 
+  String _searchQuery = '';
+
   late ScrollController _scrollController;
 
   // Horror tag ID sa MangaDex
   static const String _horrorTagId =
       'b29d6a3d-1569-4e7a-8caf-7557bc92cd5d';
+
+  List<Map<String, dynamic>> get _filteredList {
+    if (_searchQuery.isEmpty) return horrorList;
+    return horrorList
+        .where((manga) => manga['title']
+            .toString()
+            .toLowerCase()
+            .contains(_searchQuery.toLowerCase()))
+        .toList();
+  }
 
   @override
   void initState() {
@@ -210,16 +222,14 @@ class _HorrorScreenState extends State<HorrorScreen> {
                         width: coverWidth,
                         height: coverHeight,
                         color: const Color(0xFF454545),
-                        child: const Icon(Icons.broken_image,
-                            color: Colors.grey),
+                        child: const Icon(Icons.broken_image, color: Colors.grey),
                       ),
                     )
                   : Container(
                       width: coverWidth,
                       height: coverHeight,
                       color: const Color(0xFF454545),
-                      child: const Icon(Icons.broken_image,
-                          color: Colors.grey),
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
                     ),
             ),
             const SizedBox(width: 14),
@@ -240,8 +250,7 @@ class _HorrorScreenState extends State<HorrorScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: dividerVerticalPadding),
+                    padding: EdgeInsets.symmetric(vertical: dividerVerticalPadding),
                     child: Divider(
                       thickness: dividerThickness,
                       color: Colors.black26,
@@ -270,6 +279,8 @@ class _HorrorScreenState extends State<HorrorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final displayList = _filteredList;
+
     return Scaffold(
       backgroundColor: const Color(0xFF2A2A2A),
       bottomNavigationBar: Container(
@@ -395,21 +406,25 @@ class _HorrorScreenState extends State<HorrorScreen> {
                         ),
                       ),
                       const SizedBox(height: 45),
+                      // Search bar
                       Container(
                         height: 50,
                         decoration: BoxDecoration(
                           color: const Color(0xFF3D3D3D),
                           borderRadius: BorderRadius.circular(25),
                         ),
-                        child: const TextField(
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
+                        child: TextField(
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
                             hintText: 'Search',
                             hintStyle: TextStyle(color: Colors.grey),
                             prefixIcon: Icon(Icons.search, color: Colors.grey),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(vertical: 14),
                           ),
+                          onChanged: (value) {
+                            setState(() => _searchQuery = value);
+                          },
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -424,46 +439,61 @@ class _HorrorScreenState extends State<HorrorScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                      : ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 8),
-                          itemCount: horrorList.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == horrorList.length) {
-                              if (isLoadingMore) {
-                                return const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 20),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                );
-                              }
-                              if (!_hasMore) {
-                                return const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 20),
-                                  child: Center(
-                                    child: Text(
-                                      'No more results',
-                                      style: TextStyle(
-                                        color: Colors.white54,
-                                        fontSize: 13,
+                      : displayList.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'No results found',
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              controller: _searchQuery.isEmpty
+                                  ? _scrollController
+                                  : null,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 8),
+                              itemCount: displayList.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index == displayList.length) {
+                                  if (_searchQuery.isNotEmpty) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  if (isLoadingMore) {
+                                    return const Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 20),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  }
+                                  if (!_hasMore) {
+                                    return const Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 20),
+                                      child: Center(
+                                        child: Text(
+                                          'No more results',
+                                          style: TextStyle(
+                                            color: Colors.white54,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return const SizedBox.shrink();
+                                }
+                                return Padding(
+                                  padding: EdgeInsets.only(bottom: cardSpacing),
+                                  child: _buildMangaCard(displayList[index]),
                                 );
-                              }
-                              return const SizedBox.shrink();
-                            }
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: cardSpacing),
-                              child: _buildMangaCard(horrorList[index]),
-                            );
-                          },
-                        ),
+                              },
+                            ),
                 ),
               ],
             ),

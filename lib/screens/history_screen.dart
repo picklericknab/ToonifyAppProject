@@ -12,7 +12,7 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-
+  
   final double cardHeight = 110.0;
   final double cardBorderRadius = 14.0;
   final double cardSpacing = 14.0;
@@ -24,13 +24,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
   bool _isSearching = false;
   String _searchQuery = '';
 
+  List<Map<String, dynamic>> _displayList = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
-  // Sa clear history na part
+  Future<void> _loadHistory() async {
+    final results = await _historyService.search(_searchQuery);
+    if (mounted) {
+      setState(() {
+        _displayList = results;
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Clear history na logic
   void _confirmClearHistory() {
     showDialog(
       context: context,
@@ -53,10 +72,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               _historyService.clearHistory();
               Navigator.pop(context);
-              setState(() {});
+              _loadHistory();
             },
             child: const Text(
               'Delete',
@@ -89,7 +108,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // sa cover image sa history
               CachedNetworkImage(
                 imageUrl: entry['coverUrl'],
                 fit: BoxFit.cover,
@@ -169,9 +187,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Sa searcg history na query
-    final displayList = _historyService.search(_searchQuery);
-
     return Scaffold(
       backgroundColor: const Color(0xFF2A2A2A),
       bottomNavigationBar: Container(
@@ -296,6 +311,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             ),
                           ),
                           const Spacer(),
+                          // Search icon
                           Transform.translate(
                             offset: const Offset(0, -25),
                             child: IconButton(
@@ -310,11 +326,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   if (!_isSearching) {
                                     _searchQuery = '';
                                     _searchController.clear();
+                                    _loadHistory();
                                   }
                                 });
                               },
                             ),
                           ),
+                          // Trash icon
                           Transform.translate(
                             offset: const Offset(0, -25),
                             child: IconButton(
@@ -350,6 +368,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             ),
                             onChanged: (value) {
                               setState(() => _searchQuery = value);
+                              _loadHistory();
                             },
                           ),
                         ),
@@ -360,31 +379,38 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
                 // Mao ni ang history list
                 Expanded(
-                  child: displayList.isEmpty
-                      ? Center(
-                          child: Text(
-                            _searchQuery.isNotEmpty
-                                ? 'No results found'
-                                : 'No history yet',
-                            style: const TextStyle(
-                              color: Colors.white54,
-                              fontSize: 15,
-                            ),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
                           ),
                         )
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 8),
-                          itemCount: displayList.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding:
-                                  EdgeInsets.only(bottom: cardSpacing),
-                              child:
-                                  _buildHistoryCard(displayList[index]),
-                            );
-                          },
-                        ),
+                      : _displayList.isEmpty
+                          ? Center(
+                              child: Text(
+                                _searchQuery.isNotEmpty
+                                    ? 'No results found'
+                                    : 'No history yet',
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 8),
+                              itemCount: _displayList.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding:
+                                      EdgeInsets.only(bottom: cardSpacing),
+                                  child: _buildHistoryCard(
+                                      _displayList[index]),
+                                );
+                              },
+                            ),
                 ),
               ],
             ),
