@@ -15,6 +15,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final passwordCtrl = TextEditingController();
   final confirmCtrl = TextEditingController();
 
+  String? usernameError;
+  String? emailError;
+  String? passwordError;
+  String? confirmError;
+
+  bool isLoading = false;
+
   @override
   void dispose() {
     usernameCtrl.dispose();
@@ -24,10 +31,139 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  String? _validateUsername(String value) {
+    if (value.isEmpty) return 'Username is required.';
+    if (value.length < 3) return 'Username must be at least 3 characters.';
+    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+      return 'Only letters, numbers, and underscores allowed.';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String value) {
+    if (value.isEmpty) return 'Email is required.';
+    if (!RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+      return 'Enter a valid email address.';
+    }
+    return null;
+  }
+
+  // Validattion sa password
+  String? _validatePassword(String value) {
+    if (value.isEmpty) return 'Password is required.';
+    if (value.length < 8) return 'Password must be at least 8 characters.';
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Password must contain at least 1 number.';
+    }
+    return null;
+  }
+
+  String? _validateConfirm(String value) {
+    if (value.isEmpty) return 'Please confirm your password.';
+    if (value != passwordCtrl.text) return 'Passwords do not match.';
+    return null;
+  }
+
+  Future<void> _handleRegister() async {
+    setState(() {
+      usernameError = _validateUsername(usernameCtrl.text.trim());
+      emailError = _validateEmail(emailCtrl.text.trim());
+      passwordError = _validatePassword(passwordCtrl.text);
+      confirmError = _validateConfirm(confirmCtrl.text);
+    });
+
+    if (usernameError != null ||
+        emailError != null ||
+        passwordError != null ||
+        confirmError != null) return;
+
+    setState(() => isLoading = true);
+
+    final error = await AuthService.register(
+      usernameCtrl.text.trim(),
+      emailCtrl.text.trim(),
+      passwordCtrl.text,
+    );
+
+    if (mounted) {
+      setState(() => isLoading = false);
+
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => const SuccessRegisteredScreen()),
+        );
+      }
+    }
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    bool obscure = false,
+    String? errorText,
+    void Function(String)? onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          style: const TextStyle(color: Colors.white),
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.grey),
+            filled: true,
+            fillColor: const Color(0xFF454545),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            // Red border kung nay error
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: errorText != null
+                  ? const BorderSide(color: Colors.red, width: 1.5)
+                  : BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: errorText != null
+                  ? const BorderSide(color: Colors.red, width: 1.5)
+                  : const BorderSide(color: Colors.white54, width: 1.5),
+            ),
+          ),
+        ),
+        // Error message sa ubos sa field
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 6),
+            child: Text(
+              errorText,
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2A2A2A),
+      backgroundColor: const Color(0xFF2A2A2A),
       body: Stack(
         children: [
           Positioned(
@@ -37,7 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 231, 230, 230),
+                color: const Color.fromARGB(255, 231, 230, 230),
                 borderRadius: BorderRadius.circular(180),
               ),
             ),
@@ -49,7 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(140),
               ),
             ),
@@ -61,7 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(120),
               ),
             ),
@@ -73,7 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(160),
               ),
             ),
@@ -85,18 +221,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(160),
               ),
             ),
           ),
-          // Toonify header usba ang position ari.
+          // Toonify header usba ang position ari
           Positioned(
             top: 37,
             left: 5,
             child: Row(
               children: [
-                Text(
+                const Text(
                   'Toonify',
                   style: TextStyle(
                     fontFamily: 'Georgia',
@@ -106,9 +242,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 CustomPaint(
-                  size: Size(38, 38),
+                  size: const Size(38, 38),
                   painter: MoonPainter(),
                 ),
               ],
@@ -118,16 +254,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height, // Para mapuno ang screen
+                  minHeight: MediaQuery.of(context).size.height,
                 ),
                 child: IntrinsicHeight(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 180),
-                        Center( // Ari usba ang position sa Sign up text
+                        const SizedBox(height: 180),
+                        const Center(
                           child: Text(
                             'Sign up',
                             style: TextStyle(
@@ -138,122 +274,83 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 40), // Space sa ubos sa Sign up
-                        TextField( // Mao ni sa USERNAME
+                        const SizedBox(height: 40), // Space sa ubos sa Sign up
+                        _buildTextField(
                           controller: usernameCtrl,
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Username',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            filled: true,
-                            fillColor: Color(0xFF454545),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25), // Ari usba ang border radius
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          hint: 'Username',
+                          errorText: usernameError,
+                          onChanged: (_) {
+                            if (usernameError != null) {
+                              setState(() => usernameError = null);
+                            }
+                          },
                         ),
-                        SizedBox(height: 30), // Space sa fields
-                        TextField( // Mao ni sa EMAIL
+                        const SizedBox(height: 20), // Space sa fields
+                        _buildTextField(
                           controller: emailCtrl,
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            filled: true,
-                            fillColor: Color(0xFF454545),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25), // Ari usba ang border radius
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          hint: 'Email',
+                          errorText: emailError,
+                          onChanged: (_) {
+                            if (emailError != null) {
+                              setState(() => emailError = null);
+                            }
+                          },
                         ),
-                        SizedBox(height: 30), // Kani pud
-                        TextField( // Mao ni sa PASSWORD
+                        const SizedBox(height: 20), // Kani pud
+                        _buildTextField(
                           controller: passwordCtrl,
-                          obscureText: true,
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            filled: true,
-                            fillColor: Color(0xFF454545),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25), // Ari usba ang border radius
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          hint: 'Password',
+                          obscure: true,
+                          errorText: passwordError,
+                          onChanged: (_) {
+                            if (passwordError != null) {
+                              setState(() => passwordError = null);
+                            }
+                          },
                         ),
-                        SizedBox(height: 30), // Kani pud
-                        TextField( // Mao ni sa CONFIRM PASSWORD
+                        const SizedBox(height: 20), // Kani pud
+                        _buildTextField(
                           controller: confirmCtrl,
-                          obscureText: true,
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Confirm Password',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            filled: true,
-                            fillColor: Color(0xFF454545),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25), // Ari usba ang border radius
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          hint: 'Confirm Password',
+                          obscure: true,
+                          errorText: confirmError,
+                          onChanged: (_) {
+                            if (confirmError != null) {
+                              setState(() => confirmError = null);
+                            }
+                          },
                         ),
-                        SizedBox(height: 45), // Space sa Register button
+                        const SizedBox(height: 35), // Space sa Register button
                         SizedBox(
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
-                            onPressed: () {
-                              // Ari mag-check kung sakto ba
-                              if (usernameCtrl.text.isEmpty ||
-                                  emailCtrl.text.isEmpty ||
-                                  passwordCtrl.text.isEmpty ||
-                                  confirmCtrl.text.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Please fill in the fields first.'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              } else if (passwordCtrl.text != confirmCtrl.text) {
-                                // Kung dili mao ang password
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Dili mag-match ang passwords'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              } else {
-                                // Kung okay tanan ma save ang credentials
-                                AuthService.register(emailCtrl.text, passwordCtrl.text);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const SuccessRegisteredScreen()),
-                                );
-                              }
-                            },
+                            onPressed: isLoading ? null : _handleRegister,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF4CAF50),
+                              backgroundColor: const Color(0xFF4CAF50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: Text(
-                              'Register',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  )
+                                : const Text(
+                                    'Register',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                           ),
                         ),
-                        SizedBox(height: 20), // Space sa ubos sa button
+                        const SizedBox(height: 20), // Space sa ubos sa button
                         Row( // Mao ni ang already have an account
                           children: [
-                            Text(
+                            const Text(
                               'already have an account?  ',
                               style: TextStyle(
                                 color: Colors.grey,
@@ -265,7 +362,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 // Balik sa Login screen
                                 Navigator.pop(context);
                               },
-                              child: Text(
+                              child: const Text(
                                 'Sign In',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -289,7 +386,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-class MoonPainter extends CustomPainter { // Mao ni ang Moon basta
+class MoonPainter extends CustomPainter { // Mao ni ang Moon
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.white.withOpacity(0.85);

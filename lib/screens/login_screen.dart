@@ -4,17 +4,68 @@ import 'forgot_password_screen.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Ari makuha ang input sa user
-    final emailCtrl = TextEditingController();
-    final passwordCtrl = TextEditingController();
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  // Ari makuha ang input sa user
+  final emailCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    emailCtrl.dispose();
+    passwordCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    if (emailCtrl.text.isEmpty || passwordCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in the fields first.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    final success =
+        await AuthService.login(emailCtrl.text.trim(), passwordCtrl.text);
+
+    if (mounted) {
+      setState(() => isLoading = false);
+
+      if (success) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (route) => false,
+        );
+      } else {
+        // Kung sayop ang credentials
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Wrong email or password.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2A2A2A),
+      backgroundColor: const Color(0xFF2A2A2A),
       body: Stack(
         children: [
           Positioned(
@@ -24,7 +75,7 @@ class LoginScreen extends StatelessWidget {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 231, 230, 230),
+                color: const Color.fromARGB(255, 231, 230, 230),
                 borderRadius: BorderRadius.circular(180),
               ),
             ),
@@ -36,7 +87,7 @@ class LoginScreen extends StatelessWidget {
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(140),
               ),
             ),
@@ -48,7 +99,7 @@ class LoginScreen extends StatelessWidget {
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(120),
               ),
             ),
@@ -60,7 +111,7 @@ class LoginScreen extends StatelessWidget {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(160),
               ),
             ),
@@ -72,18 +123,18 @@ class LoginScreen extends StatelessWidget {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(160),
               ),
             ),
           ),
-          // Toonify header, usba ang position ari.
+          // Toonify header
           Positioned(
             top: 37,
             left: 5,
             child: Row(
               children: [
-                Text(
+                const Text(
                   'Toonify',
                   style: TextStyle(
                     fontFamily: 'Georgia',
@@ -93,9 +144,9 @@ class LoginScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 CustomPaint(
-                  size: Size(38, 38),
+                  size: const Size(38, 38),
                   painter: MoonPainter(),
                 ),
               ],
@@ -103,12 +154,12 @@ class LoginScreen extends StatelessWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 180),
-                  Center( // Ari usba ang position sa Log in text
+                  const SizedBox(height: 180),
+                  const Center( // Ari usba ang position sa Log in text
                     child: Text(
                       'Log in',
                       style: TextStyle(
@@ -119,93 +170,74 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 40), // SPACE nila duha
+                  const SizedBox(height: 40), // SPACE nila duha
                   TextField( // Mao ni sa EMAIL
                     controller: emailCtrl,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Email',
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: const TextStyle(color: Colors.grey),
                       filled: true,
-                      fillColor: Color(0xFF454545),
+                      fillColor: const Color(0xFF454545),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25), // Ari usba ang border radius
+                        borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                  SizedBox(height: 30), // Kani pud
+                  const SizedBox(height: 30), // Kani pud
                   TextField( // Mao ni sa PASSWORD
                     controller: passwordCtrl,
                     obscureText: true,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Password',
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: const TextStyle(color: Colors.grey),
                       filled: true,
-                      fillColor: Color(0xFF454545),
+                      fillColor: const Color(0xFF454545),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25), // Ari usba ang border radius
+                        borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                  SizedBox(height: 45), // Mao ni sa SIGN IN
+                  const SizedBox(height: 45), // Mao ni sa SIGN IN
                   SizedBox(
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Ari e check kung sakto ba ang credentials
-                        if (emailCtrl.text.isEmpty || passwordCtrl.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Please fill in the fields first.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } else if (AuthService.login(emailCtrl.text, passwordCtrl.text)) {
-                          Navigator.pushAndRemoveUntil( // If sakto lahus sa Homescreen
-                            context,
-                            MaterialPageRoute(builder: (_) => const HomeScreen()),
-                            (route) => false,
-                          );
-                        } else {
-                          // Kung sayop ang credentials
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Wrong email or password'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
+                      onPressed: isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF4CAF50),
+                        backgroundColor: const Color(0xFF4CAF50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text(
-                        'Sign in',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            )
+                          : const Text(
+                              'Sign in',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                   ),
-                  SizedBox(height: 20), // Sa Forgot Password
+                  const SizedBox(height: 20), // Sa Forgot Password
                   GestureDetector(
                     onTap: () {
-                      // Navigate sa Forgot Password screen
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                        MaterialPageRoute(
+                            builder: (_) => const ForgotPasswordScreen()),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       'Forgot Password?',
                       style: TextStyle(
                         color: Colors.grey,
@@ -213,16 +245,16 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 6), // Sa Create Account
+                  const SizedBox(height: 6), // Sa Create Account
                   GestureDetector(
                     onTap: () {
-                      // Navigate sa Register screen
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                        MaterialPageRoute(
+                            builder: (_) => const RegisterScreen()),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       'Create Account',
                       style: TextStyle(
                         color: Colors.white,

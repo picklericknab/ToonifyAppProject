@@ -8,6 +8,7 @@ import 'popular_screen.dart';
 import 'romance_screen.dart';
 import 'action_screen.dart';
 import 'history_screen.dart';
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -207,14 +208,14 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {},
             ),
             IconButton(
-            icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const HistoryScreen()),
-              );
-            },
-          ),
+              icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.grey, size: 28),
               onPressed: () {},
@@ -309,25 +310,36 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 45), // Space ubos sa header
-                      Container( // Mao ni ang search bar
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3D3D3D),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: const TextField(
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Search',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 14),
+                      // Sa search bar na page
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SearchScreen()),
+                          );
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3D3D3D),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: const Row(
+                            children: [
+                              SizedBox(width: 12),
+                              Icon(Icons.search, color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text(
+                                'Search',
+                                style: TextStyle(color: Colors.grey, fontSize: 16),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 20), // Space sa ubos sa search bar
-                      Row( 
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           _GenreChip(
@@ -348,14 +360,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(width: 40),
                           _GenreChip(
                             label: 'Horror',
-                            onTap:() => Navigator.push(
+                            onTap: () => Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const HorrorScreen())
+                              MaterialPageRoute(builder: (_) => const HorrorScreen()),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24), 
+                      const SizedBox(height: 24),
                       const Text( // Featured section title
                         'Featured',
                         style: TextStyle(
@@ -411,14 +423,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                         ),
-                                        errorWidget:
-                                            (context, url, error) =>
-                                                Container(
+                                        errorWidget: (context, url, error) =>
+                                            Container(
                                           width: double.infinity,
                                           height: 160,
                                           color: const Color(0xFF454545),
-                                          child: const Icon(
-                                              Icons.broken_image,
+                                          child: const Icon(Icons.broken_image,
                                               color: Colors.grey),
                                         ),
                                       )
@@ -456,24 +466,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             _buildPopularBox(
-                              coverUrl: isLoadingPopular ||
-                                      popularCoverUrls.isEmpty
+                              coverUrl: isLoadingPopular || popularCoverUrls.isEmpty
                                   ? null
                                   : popularCoverUrls[0],
                               width: smallBoxSize,
                               height: smallBoxSize,
                             ),
                             _buildPopularBox(
-                              coverUrl: isLoadingPopular ||
-                                      popularCoverUrls.length < 2
+                              coverUrl: isLoadingPopular || popularCoverUrls.length < 2
                                   ? null
                                   : popularCoverUrls[1],
                               width: smallBoxSize,
                               height: smallBoxSize,
                             ),
                             _buildPopularBox(
-                              coverUrl: isLoadingPopular ||
-                                      popularCoverUrls.length < 3
+                              coverUrl: isLoadingPopular || popularCoverUrls.length < 3
                                   ? null
                                   : popularCoverUrls[2],
                               width: smallBoxSize,

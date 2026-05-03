@@ -8,6 +8,7 @@ import 'home_screen.dart';
 import 'romance_screen.dart';
 import 'action_screen.dart';
 import 'horror_screen.dart';
+import 'search_screen.dart';
 
 class FeaturedScreen extends StatefulWidget {
   const FeaturedScreen({super.key});
@@ -342,25 +343,35 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                         ),
                       ),
                       const SizedBox(height: 45), // Space ubos sa header
-                      Container( 
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3D3D3D),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: const TextField(
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Search',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 14),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SearchScreen()),
+                          );
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3D3D3D),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: const Row(
+                            children: [
+                              SizedBox(width: 12),
+                              Icon(Icons.search, color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text(
+                                'Search',
+                                style: TextStyle(color: Colors.grey, fontSize: 16),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 20), // Space sa ubos sa search bar
-                      Row( 
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           _GenreChip(
@@ -373,7 +384,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           const SizedBox(width: 40),
                           _GenreChip(
                             label: 'Action',
-                            onTap:() => Navigator.push(
+                            onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const ActionScreen()),
                             ),
@@ -381,7 +392,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           const SizedBox(width: 40),
                           _GenreChip(
                             label: 'Horror',
-                            onTap:() => Navigator.push(
+                            onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const HorrorScreen()),
                             ),
@@ -389,7 +400,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                         ],
                       ),
                       const SizedBox(height: 24), // Space sa ubos sa chips
-                      const Text( 
+                      const Text(
                         'Hot',
                         style: TextStyle(
                           fontFamily: 'Georgia',
@@ -424,8 +435,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                                           builder: (_) => AppDescription(
                                             mangaId: hotManga!['id'],
                                             title: hotManga!['title'],
-                                            coverUrl:
-                                                hotManga!['coverUrl'] ?? '',
+                                            coverUrl: hotManga!['coverUrl'] ?? '',
                                           ),
                                         ),
                                       );
@@ -439,8 +449,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                                         width: double.infinity,
                                         height: 160,
                                         fit: BoxFit.cover,
-                                        placeholder: (context, url) =>
-                                            Container(
+                                        placeholder: (context, url) => Container(
                                           width: double.infinity,
                                           height: 160,
                                           color: const Color(0xFF454545),
@@ -451,14 +460,12 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                                             ),
                                           ),
                                         ),
-                                        errorWidget:
-                                            (context, url, error) =>
-                                                Container(
+                                        errorWidget: (context, url, error) =>
+                                            Container(
                                           width: double.infinity,
                                           height: 160,
                                           color: const Color(0xFF454545),
-                                          child: const Icon(
-                                              Icons.broken_image,
+                                          child: const Icon(Icons.broken_image,
                                               color: Colors.grey),
                                         ),
                                       )
@@ -472,7 +479,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                               ),
                             ),
                       const SizedBox(height: 10), // Space sa ubos sa Hot banner
-                      const Text( 
+                      const Text(
                         'Recommended',
                         style: TextStyle(
                           fontFamily: 'Georgia',
@@ -495,38 +502,32 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             _buildCoverImage(
-                              coverUrl: isLoadingRecommended ||
-                                      recommendedList.isEmpty
+                              coverUrl: isLoadingRecommended || recommendedList.isEmpty
                                   ? null
                                   : recommendedList[0]['coverUrl'],
                               width: smallBoxSize,
                               height: smallBoxSize,
-                              mangaData: isLoadingRecommended ||
-                                      recommendedList.isEmpty
+                              mangaData: isLoadingRecommended || recommendedList.isEmpty
                                   ? null
                                   : recommendedList[0],
                             ),
                             _buildCoverImage(
-                              coverUrl: isLoadingRecommended ||
-                                      recommendedList.length < 2
+                              coverUrl: isLoadingRecommended || recommendedList.length < 2
                                   ? null
                                   : recommendedList[1]['coverUrl'],
                               width: smallBoxSize,
                               height: smallBoxSize,
-                              mangaData: isLoadingRecommended ||
-                                      recommendedList.length < 2
+                              mangaData: isLoadingRecommended || recommendedList.length < 2
                                   ? null
                                   : recommendedList[1],
                             ),
                             _buildCoverImage(
-                              coverUrl: isLoadingRecommended ||
-                                      recommendedList.length < 3
+                              coverUrl: isLoadingRecommended || recommendedList.length < 3
                                   ? null
                                   : recommendedList[2]['coverUrl'],
                               width: smallBoxSize,
                               height: smallBoxSize,
-                              mangaData: isLoadingRecommended ||
-                                      recommendedList.length < 3
+                              mangaData: isLoadingRecommended || recommendedList.length < 3
                                   ? null
                                   : recommendedList[2],
                             ),
@@ -538,33 +539,27 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: boxSpacing),
+                              padding: const EdgeInsets.symmetric(horizontal: boxSpacing),
                               child: _buildCoverImage(
-                                coverUrl: isLoadingRecommended ||
-                                        recommendedList.length < 4
+                                coverUrl: isLoadingRecommended || recommendedList.length < 4
                                     ? null
                                     : recommendedList[3]['coverUrl'],
                                 width: largeBoxSize,
                                 height: largeBoxSize,
-                                mangaData: isLoadingRecommended ||
-                                        recommendedList.length < 4
+                                mangaData: isLoadingRecommended || recommendedList.length < 4
                                     ? null
                                     : recommendedList[3],
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: boxSpacing),
+                              padding: const EdgeInsets.symmetric(horizontal: boxSpacing),
                               child: _buildCoverImage(
-                                coverUrl: isLoadingRecommended ||
-                                        recommendedList.length < 5
+                                coverUrl: isLoadingRecommended || recommendedList.length < 5
                                     ? null
                                     : recommendedList[4]['coverUrl'],
                                 width: largeBoxSize,
                                 height: largeBoxSize,
-                                mangaData: isLoadingRecommended ||
-                                        recommendedList.length < 5
+                                mangaData: isLoadingRecommended || recommendedList.length < 5
                                     ? null
                                     : recommendedList[4],
                               ),
@@ -590,12 +585,12 @@ class _GenreChip extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
 
-  const _GenreChip({required this.label, this.onTap}); 
+  const _GenreChip({required this.label, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( 
-      onTap: onTap,  
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
         decoration: BoxDecoration(
