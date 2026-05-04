@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   static const String _accountsKey = 'registered_accounts';
 
-  //SharedPreferences 
   static SharedPreferences? _prefs;
 
   static Future<void> init() async {
@@ -16,7 +15,7 @@ class AuthService {
     return _prefs!;
   }
 
-  static Future<List<Map<String, dynamic>>> _getAccounts() async {
+  static Future<List<Map<String, dynamic>>> getAccounts() async {
     final prefs = await _getPrefs();
     final String? accountsJson = prefs.getString(_accountsKey);
     if (accountsJson == null) return [];
@@ -24,7 +23,6 @@ class AuthService {
     return decoded.map((e) => Map<String, dynamic>.from(e)).toList();
   }
 
-  //Ma save ang accounts
   static Future<void> _saveAccounts(
       List<Map<String, dynamic>> accounts) async {
     final prefs = await _getPrefs();
@@ -33,7 +31,7 @@ class AuthService {
 
   static Future<String?> register(
       String username, String email, String password) async {
-    final accounts = await _getAccounts();
+    final accounts = await getAccounts();
 
     final emailExists = accounts.any((a) =>
         a['email'].toString().toLowerCase() == email.toLowerCase());
@@ -54,7 +52,7 @@ class AuthService {
   }
 
   static Future<bool> login(String email, String password) async {
-    final accounts = await _getAccounts();
+    final accounts = await getAccounts();
     return accounts.any((a) =>
         a['email'].toString().toLowerCase() == email.toLowerCase() &&
         a['password'] == password);

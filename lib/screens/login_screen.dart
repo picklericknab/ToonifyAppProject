@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import '../services/auth_service.dart';
@@ -45,13 +46,15 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => isLoading = false);
 
       if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('logged_in_email', emailCtrl.text.trim());
+
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
           (route) => false,
         );
       } else {
-        // Kung sayop ang credentials
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Wrong email or password.'),
@@ -231,6 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20), // Sa Forgot Password
                   GestureDetector(
                     onTap: () {
+                      // Navigate sa Forgot Password screen
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -248,6 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 6), // Sa Create Account
                   GestureDetector(
                     onTap: () {
+                      // Navigate sa Register screen
                       Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:toonifyapp/screens/horror_screen.dart';
+import 'package:toonifyapp/screens/profile_screen.dart';
 import 'featured_screen.dart';
 import 'popular_screen.dart';
 import 'romance_screen.dart';
@@ -44,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final fileName = data['data']['attributes']['fileName'];
-        // I-build ang full image URL
         return 'https://uploads.mangadex.org/covers/$mangaId/$fileName.256.jpg';
       }
     } catch (e) {
@@ -218,7 +218,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.grey, size: 28),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen())
+                );
+              },
             ),
           ],
         ),
