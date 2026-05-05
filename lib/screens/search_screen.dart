@@ -12,8 +12,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  // =============================================
-  // USBA KINI PARA MABAG-O ANG GIDAK-ON SA CARD
+
   final double cardBorderRadius = 16.0;
   final double cardPadding = 12.0;
   final double cardSpacing = 14.0;
@@ -24,7 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final double descFontSize = 12.5;
   final double dividerThickness = 0.8;
   final double dividerVerticalPadding = 6.0;
-  // =============================================
+
 
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
@@ -53,7 +52,6 @@ class _SearchScreenState extends State<SearchScreen> {
     return null;
   }
 
-  // Kuhaon ang search results gikan sa MangaDex
   Future<void> searchManga(String query) async {
     if (query.trim().isEmpty) return;
 
@@ -86,7 +84,6 @@ class _SearchScreenState extends State<SearchScreen> {
           final mangaId = manga['id'];
           final attributes = manga['attributes'];
 
-          // I-summarize ang description sa 2 sentences
           String fullDesc = attributes['description']['en'] ??
               (attributes['description'].isNotEmpty
                   ? attributes['description'].values.first
@@ -127,7 +124,6 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  // Mao ni ang usa ka manga card — same style sa genre screens
   Widget _buildMangaCard(Map<String, dynamic> manga) {
     return GestureDetector(
       onTap: () {
@@ -186,7 +182,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
             ),
             const SizedBox(width: 14),
-            // Title ug description sa tuo
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +198,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  // Divider sa taliwala sa title ug description
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: dividerVerticalPadding),
                     child: Divider(
@@ -238,7 +232,6 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: const Color(0xFF2A2A2A),
       body: Stack(
         children: [
-          // Dekorasyon nga mga bilog — sama sa ubang screens
           Positioned(
             top: -30,
             left: 40,
@@ -323,7 +316,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                       const SizedBox(height: 45),
-                      // Search bar — active ug functional
                       Container(
                         height: 50,
                         decoration: BoxDecoration(
@@ -340,7 +332,6 @@ class _SearchScreenState extends State<SearchScreen> {
                             hintText: 'Search manga or manwha...',
                             hintStyle: const TextStyle(color: Colors.grey),
                             prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                            // X button para ma-clear ang search
                             suffixIcon: _searchController.text.isNotEmpty
                                 ? IconButton(
                                     icon: const Icon(Icons.close, color: Colors.grey),
@@ -363,7 +354,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     ],
                   ),
                 ),
-                // Mao ni ang results area
                 Expanded(
                   child: isLoading
                       ? const Center(
@@ -373,7 +363,6 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         )
                       : !hasSearched
-                          // Kung wapa mag-search, ipakita ang hint
                           ? const Center(
                               child: Text(
                                 'Type to search manga or manwha',
@@ -394,7 +383,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                   ),
                                 )
-                              // Ipakita ang results
                               : ListView.builder(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 8),
@@ -413,7 +401,7 @@ class _SearchScreenState extends State<SearchScreen> {
           // Back button
           Positioned(
             top: 0,
-            left: 0,
+            left: 355,
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.only(left: 12, top: 8),

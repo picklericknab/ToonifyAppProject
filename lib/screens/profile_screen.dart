@@ -259,7 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       const SizedBox(height: 20),
                       Transform.translate(
-                        offset: const Offset(-14, 0),
+                        offset: const Offset(-14, -6),
                         child: const Text(
                           'Profile',
                           style: TextStyle(
@@ -272,11 +272,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // Log-out button sa top right
+                      // Log-out sa kilid
                       GestureDetector(
                         onTap: _handleLogout,
                         child: Container(
-                          width: 42,
+                          width: 15,
                           height: 42,
                           decoration: BoxDecoration(
                             color: const Color(0xFF3D3D3D),
@@ -292,7 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 50),
                 // Profile picture sa tunga
                 Center(
                   child: GestureDetector(

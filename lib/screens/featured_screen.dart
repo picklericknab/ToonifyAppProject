@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:toonifyapp/screens/history_screen.dart';
+import 'package:toonifyapp/screens/profile_screen.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
 import 'romance_screen.dart';
@@ -251,7 +252,12 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.grey, size: 28),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
+              },
             ),
           ],
         ),

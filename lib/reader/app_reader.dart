@@ -55,9 +55,11 @@ class _AppReaderState extends State<AppReader> {
   void _handleBack() {
     final double currentOffset =
         _scrollController.hasClients ? _scrollController.offset : 0.0;
+    final String chapterNumber = (currentChapterIndex + 1).toString();
     Navigator.pop(context, {
       'chapterIndex': currentChapterIndex,
       'scrollOffset': currentOffset,
+      'chapterNumber': chapterNumber,
     });
   }
 

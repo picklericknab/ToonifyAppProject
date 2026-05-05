@@ -203,7 +203,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Row(
                     children: [
                       Transform.translate(
-                        offset: const Offset(-14, 0),
+                        offset: const Offset(-14, -6),
                         child: const Text(
                           'Settings',
                           style: TextStyle(
