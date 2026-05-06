@@ -48,7 +48,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-  // Validattion sa password
   String? _validatePassword(String value) {
     if (value.isEmpty) return 'Password is required.';
     if (value.length < 8) return 'Password must be at least 8 characters.';
@@ -129,7 +128,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
             ),
-            // Red border kung nay error
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: errorText != null
@@ -144,7 +142,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
-        // Error message sa ubos sa field
         if (errorText != null)
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 6),
@@ -275,6 +272,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         const SizedBox(height: 40), // Space sa ubos sa Sign up
+                        // USERNAME field
                         _buildTextField(
                           controller: usernameCtrl,
                           hint: 'Username',
@@ -286,6 +284,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                         const SizedBox(height: 20), // Space sa fields
+                        // EMAIL field
                         _buildTextField(
                           controller: emailCtrl,
                           hint: 'Email',
@@ -297,6 +296,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                         const SizedBox(height: 20), // Kani pud
+                        // PASSWORD field
                         _buildTextField(
                           controller: passwordCtrl,
                           hint: 'Password',
@@ -309,6 +309,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                         const SizedBox(height: 20), // Kani pud
+                        // CONFIRM PASSWORD field
                         _buildTextField(
                           controller: confirmCtrl,
                           hint: 'Confirm Password',

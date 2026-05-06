@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1004714144253",
+    "project_id": "toonify-28676",
+    "storage_bucket": "toonify-28676.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004714144253:android:1e9cc74bdc8da947aba994",
+        "android_client_info": {
+          "package_name": "com.example.toonifyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDniTNNAeCFyIeI_lblAtmhPAm25JgfDl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -39,13 +39,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => isLoading = true);
 
-    final success =
-        await AuthService.login(emailCtrl.text.trim(), passwordCtrl.text);
+    final error = await AuthService.login(
+        emailCtrl.text.trim(), passwordCtrl.text);
 
     if (mounted) {
       setState(() => isLoading = false);
 
-      if (success) {
+      if (error == null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('logged_in_email', emailCtrl.text.trim());
 
@@ -55,9 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
           (route) => false,
         );
       } else {
+        // Kung sayop ang credentials
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Wrong email or password.'),
+          SnackBar(
+            content: Text(error),
             backgroundColor: Colors.red,
           ),
         );
@@ -131,7 +132,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Toonify header
           Positioned(
             top: 37,
             left: 5,

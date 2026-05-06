@@ -1,16 +1,76 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import 'success_email_screen.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Controller para sa email input
-    final emailCtrl = TextEditingController();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
 
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  // Controller para sa email input
+  final emailCtrl = TextEditingController();
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    emailCtrl.dispose();
+    super.dispose();
+  }
+
+  //send ang password reset email 
+  Future<void> _handleSendReset() async {
+    if (emailCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email first.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!RegExp(r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$')
+        .hasMatch(emailCtrl.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter a valid email address.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    final error =
+        await AuthService.sendPasswordReset(emailCtrl.text.trim());
+
+    if (mounted) {
+      setState(() => isLoading = false);
+
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SuccessEmailScreen()),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2A2A2A),
+      backgroundColor: const Color(0xFF2A2A2A),
       body: Stack(
         children: [
           Positioned(
@@ -20,7 +80,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 231, 230, 230),
+                color: const Color.fromARGB(255, 231, 230, 230),
                 borderRadius: BorderRadius.circular(180),
               ),
             ),
@@ -32,7 +92,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(140),
               ),
             ),
@@ -44,7 +104,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(120),
               ),
             ),
@@ -56,7 +116,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(160),
               ),
             ),
@@ -68,18 +128,17 @@ class ForgotPasswordScreen extends StatelessWidget {
               width: 170,
               height: 170,
               decoration: BoxDecoration(
-                color: Color(0xFF3D3D3D),
+                color: const Color(0xFF3D3D3D),
                 borderRadius: BorderRadius.circular(160),
               ),
             ),
           ),
-          // Toonify header usba ang position ari.
           Positioned(
             top: 37,
             left: 5,
             child: Row(
               children: [
-                Text(
+                const Text(
                   'Toonify',
                   style: TextStyle(
                     fontFamily: 'Georgia',
@@ -89,9 +148,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 CustomPaint(
-                  size: Size(38, 38),
+                  size: const Size(38, 38),
                   painter: MoonPainter(),
                 ),
               ],
@@ -99,12 +158,12 @@ class ForgotPasswordScreen extends StatelessWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 180),
-                  Center( // Ari usba ang position sa Forgot Password text
+                  const SizedBox(height: 180),
+                  const Center( // Ari usba ang position sa Forgot Password text
                     child: Text(
                       'Forgot Password',
                       style: TextStyle(
@@ -115,66 +174,56 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 40), // Space sa ubos sa title
+                  const SizedBox(height: 40), // Space sa ubos sa title
                   TextField( // Mao ni sa EMAIL
                     controller: emailCtrl,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       hintText: 'Email',
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: const TextStyle(color: Colors.grey),
                       filled: true,
-                      fillColor: Color(0xFF454545),
+                      fillColor: const Color(0xFF454545),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25), // Ari usba ang border radius
+                        borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                  SizedBox(height: 45), // Space sa Send Reset Link button
+                  const SizedBox(height: 45), // Space sa Send Reset Link button
                   SizedBox(
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Nabay sulod ang email
-                        if (emailCtrl.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Isulod ang imong email'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } else {
-                          // Kung nay email navigate sa success screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const SuccessEmailScreen()),
-                          );
-                        }
-                      },
+                      onPressed: isLoading ? null : _handleSendReset,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF4CAF50),
+                        backgroundColor: const Color(0xFF4CAF50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text(
-                        'Send Reset Link',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            )
+                          : const Text(
+                              'Send Reset Link',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                   ),
-                  SizedBox(height: 20), // Space sa Back to Login
+                  const SizedBox(height: 20), // Space sa Back to Login
                   GestureDetector(
                     onTap: () {
                       // Balik sa Login screen
                       Navigator.pop(context);
                     },
-                    child: Text(
+                    child: const Text(
                       'Back to Login',
                       style: TextStyle(
                         color: Colors.white,

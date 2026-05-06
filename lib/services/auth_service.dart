@@ -1,11 +1,10 @@
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Mao ni sa login ug register logic 
 class AuthService {
-  static const String _accountsKey = 'registered_accounts';
-
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
   static SharedPreferences? _prefs;
-
   static Future<void> init() async {
     _prefs ??= await SharedPreferences.getInstance();
   }
@@ -15,46 +14,90 @@ class AuthService {
     return _prefs!;
   }
 
-  static Future<List<Map<String, dynamic>>> getAccounts() async {
-    final prefs = await _getPrefs();
-    final String? accountsJson = prefs.getString(_accountsKey);
-    if (accountsJson == null) return [];
-    final List<dynamic> decoded = jsonDecode(accountsJson);
-    return decoded.map((e) => Map<String, dynamic>.from(e)).toList();
-  }
-
-  static Future<void> _saveAccounts(
-      List<Map<String, dynamic>> accounts) async {
-    final prefs = await _getPrefs();
-    await prefs.setString(_accountsKey, jsonEncode(accounts));
-  }
-
   static Future<String?> register(
       String username, String email, String password) async {
-    final accounts = await getAccounts();
+    try {
+      final prefs = await _getPrefs();
+      await prefs.setString('username_${email.toLowerCase()}', username);
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    final emailExists = accounts.any((a) =>
-        a['email'].toString().toLowerCase() == email.toLowerCase());
-    if (emailExists) return 'Email is already registered.';
+      await _auth.currentUser?.updateDisplayName(username);
 
-    final usernameExists = accounts.any((a) =>
-        a['username'].toString().toLowerCase() == username.toLowerCase());
-    if (usernameExists) return 'Username is already taken.';
-
-    accounts.add({
-      'username': username,
-      'email': email,
-      'password': password,
-    });
-
-    await _saveAccounts(accounts);
-    return null; // Null means success
+      return null; 
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          return 'Email is already registered.';
+        case 'invalid-email':
+          return 'Enter a valid email address.';
+        case 'weak-password':
+          return 'Password must be at least 6 characters.';
+        default:
+          return 'Registration failed. Please try again.';
+      }
+    } catch (e) {
+      return 'Something went wrong. Please try again.';
+    }
   }
 
-  static Future<bool> login(String email, String password) async {
-    final accounts = await getAccounts();
-    return accounts.any((a) =>
-        a['email'].toString().toLowerCase() == email.toLowerCase() &&
-        a['password'] == password);
+  static Future<String?> login(String email, String password) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return null; 
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+        case 'wrong-password':
+        case 'invalid-credential':
+          return 'Wrong email or password.';
+        case 'invalid-email':
+          return 'Enter a valid email address.';
+        case 'user-disabled':
+          return 'This account has been disabled.';
+        case 'too-many-requests':
+          return 'Too many attempts. Please try again later.';
+        default:
+          return 'Login failed. Please try again.';
+      }
+    } catch (e) {
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
+  // Mo send og email na logic since ga use ta ug firebase
+  static Future<String?> sendPasswordReset(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return null; 
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          return 'No account found with this email.';
+        case 'invalid-email':
+          return 'Enter a valid email address.';
+        default:
+          return 'Failed to send reset email. Please try again.';
+      }
+    } catch (e) {
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
+  static Future<String> getUsername(String email) async {
+    final prefs = await _getPrefs();
+    return prefs.getString('username_${email.toLowerCase()}') ??
+        email.split('@')[0];
+  }
+
+  static User? get currentUser => _auth.currentUser;
+
+  static Future<void> signOut() async {
+    await _auth.signOut();
   }
 }

@@ -35,17 +35,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     final pfp = prefs.getString(_pfpKey);
     final email = prefs.getString(_loggedInEmailKey) ?? '';
-
-    final accounts = await AuthService.getAccounts();
-    final account = accounts.firstWhere(
-      (a) => a['email'].toString().toLowerCase() == email.toLowerCase(),
-      orElse: () => {'username': 'User', 'email': email},
-    );
+    final username = AuthService.currentUser?.displayName ??
+        await AuthService.getUsername(email);
 
     if (mounted) {
       setState(() {
         _pfpPath = pfp;
-        _username = account['username'] ?? 'User';
+        _username = username;
         _email = email;
       });
     }
@@ -128,6 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           TextButton(
             onPressed: () async {
+              await AuthService.signOut();
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove(_loggedInEmailKey);
               if (mounted) {
