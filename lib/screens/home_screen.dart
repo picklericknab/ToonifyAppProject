@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:toonifyapp/screens/horror_screen.dart';
 import 'package:toonifyapp/screens/profile_screen.dart';
 import 'featured_screen.dart';
@@ -138,12 +139,12 @@ class _HomeScreenState extends State<HomeScreen> {
       height: height,
       decoration: BoxDecoration(
         color: const Color(0xFF454545),
-        borderRadius: BorderRadius.circular(boxBorderRadius),
+        borderRadius: BorderRadius.circular(boxBorderRadius.r),
       ),
-      child: const Center(
+      child: Center(
         child: CircularProgressIndicator(
           color: Colors.white,
-          strokeWidth: 2,
+          strokeWidth: 2.w,
         ),
       ),
     );
@@ -166,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(boxBorderRadius),
+        borderRadius: BorderRadius.circular(boxBorderRadius.r),
         child: CachedNetworkImage(
           imageUrl: coverUrl,
           width: width,
@@ -179,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: height,
             decoration: BoxDecoration(
               color: const Color(0xFF454545),
-              borderRadius: BorderRadius.circular(boxBorderRadius),
+              borderRadius: BorderRadius.circular(boxBorderRadius.r),
             ),
             child: const Icon(Icons.broken_image, color: Colors.grey),
           ),
@@ -193,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF2A2A2A),
       bottomNavigationBar: Container(
-        height: 65,
+        height: 65.h,
         decoration: const BoxDecoration(
           color: Color(0xFF1E1E1E),
           border: Border(
@@ -204,11 +205,11 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: const Icon(Icons.home, color: Colors.white, size: 28),
+              icon: Icon(Icons.home, color: Colors.white, size: 28.sp),
               onPressed: () {},
             ),
             IconButton(
-              icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
+              icon: Icon(Icons.menu_book, color: Colors.grey, size: 28.sp),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -217,11 +218,11 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.person, color: Colors.grey, size: 28),
+              icon: Icon(Icons.person, color: Colors.grey, size: 28.sp),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfileScreen())
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
                 );
               },
             ),
@@ -231,62 +232,62 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           Positioned(
-            top: -30,
-            left: 40,
+            top: -30.h,
+            left: 40.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 231, 230, 230),
-                borderRadius: BorderRadius.circular(180),
+                borderRadius: BorderRadius.circular(180.r),
               ),
             ),
           ),
           Positioned(
-            top: -80,
-            left: 70,
+            top: -80.h,
+            left: 70.w,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 180.w,
+              height: 180.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(140),
+                borderRadius: BorderRadius.circular(140.r),
               ),
             ),
           ),
           Positioned(
-            top: -30,
-            left: -50,
+            top: -30.h,
+            left: -50.w,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 180.w,
+              height: 180.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(120),
+                borderRadius: BorderRadius.circular(120.r),
               ),
             ),
           ),
           Positioned(
-            top: -60,
-            right: -75,
+            top: -60.h,
+            right: -75.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(160),
+                borderRadius: BorderRadius.circular(160.r),
               ),
             ),
           ),
           Positioned(
-            bottom: -135,
-            right: -75,
+            bottom: -135.h,
+            right: -75.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(160),
+                borderRadius: BorderRadius.circular(160.r),
               ),
             ),
           ),
@@ -296,25 +297,25 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       Transform.translate( // Mao ni ang Toonify header
-                        offset: const Offset(-14, -25),
-                        child: const Text(
+                        offset: Offset(-14.w, -25.h),
+                        child: Text(
                           'Toonify',
                           style: TextStyle(
                             fontFamily: 'Georgia',
-                            fontSize: 37,
+                            fontSize: 37.sp,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 45), // Space ubos sa header
+                      SizedBox(height: 45.h), // Space ubos sa header
                       // Sa search bar na page
                       GestureDetector(
                         onTap: () {
@@ -325,25 +326,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                         child: Container(
-                          height: 50,
+                          height: 50.h,
                           decoration: BoxDecoration(
                             color: const Color(0xFF3D3D3D),
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(25.r),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              SizedBox(width: 12),
-                              Icon(Icons.search, color: Colors.grey),
-                              SizedBox(width: 8),
+                              SizedBox(width: 12.w),
+                              Icon(Icons.search, color: Colors.grey, size: 20.sp),
+                              SizedBox(width: 8.w),
                               Text(
                                 'Search',
-                                style: TextStyle(color: Colors.grey, fontSize: 16),
+                                style: TextStyle(color: Colors.grey, fontSize: 16.sp),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20), // Space sa ubos sa search bar
+                      SizedBox(height: 20.h), // Space sa ubos sa search bar
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -354,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               MaterialPageRoute(builder: (_) => const RomanceScreen()),
                             ),
                           ),
-                          const SizedBox(width: 40),
+                          SizedBox(width: 40.w),
                           _GenreChip(
                             label: 'Action',
                             onTap: () => Navigator.push(
@@ -362,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               MaterialPageRoute(builder: (_) => const ActionScreen()),
                             ),
                           ),
-                          const SizedBox(width: 40),
+                          SizedBox(width: 40.w),
                           _GenreChip(
                             label: 'Horror',
                             onTap: () => Navigator.push(
@@ -372,30 +373,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      const Text( // Featured section title
+                      SizedBox(height: 24.h),
+                      Text( // Featured section title
                         'Featured',
                         style: TextStyle(
                           fontFamily: 'Georgia',
-                          fontSize: 25,
+                          fontSize: 25.sp,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 12), // Space sa ubos sa Featured title
+                      SizedBox(height: 12.h), // Space sa ubos sa Featured title
                       isLoadingFeatured
                           ? Container(
                               width: double.infinity,
-                              height: 160,
+                              height: 160.h,
                               decoration: BoxDecoration(
                                 color: const Color(0xFF454545),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(16.r),
                               ),
-                              child: const Center(
+                              child: Center(
                                 child: CircularProgressIndicator(
                                   color: Colors.white,
-                                  strokeWidth: 2,
+                                  strokeWidth: 2.w,
                                 ),
                               ),
                             )
@@ -409,29 +410,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(16.r),
                                 child: featuredCoverUrl != null
                                     ? CachedNetworkImage(
                                         imageUrl: featuredCoverUrl!,
                                         width: double.infinity,
-                                        height: 160,
+                                        height: 160.h,
                                         fit: BoxFit.cover,
                                         placeholder: (context, url) =>
                                             Container(
                                           width: double.infinity,
-                                          height: 160,
+                                          height: 160.h,
                                           color: const Color(0xFF454545),
-                                          child: const Center(
+                                          child: Center(
                                             child: CircularProgressIndicator(
                                               color: Colors.white,
-                                              strokeWidth: 2,
+                                              strokeWidth: 2.w,
                                             ),
                                           ),
                                         ),
                                         errorWidget: (context, url, error) =>
                                             Container(
                                           width: double.infinity,
-                                          height: 160,
+                                          height: 160.h,
                                           color: const Color(0xFF454545),
                                           child: const Icon(Icons.broken_image,
                                               color: Colors.grey),
@@ -439,31 +440,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                       )
                                     : Container(
                                         width: double.infinity,
-                                        height: 160,
+                                        height: 160.h,
                                         color: const Color(0xFF454545),
                                         child: const Icon(Icons.broken_image,
                                             color: Colors.grey),
                                       ),
                               ),
                             ),
-                      const SizedBox(height: 10), // Space sa ubos sa Featured banner
-                      const Text( // Popular section title
+                      SizedBox(height: 10.h), // Space sa ubos sa Featured banner
+                      Text( // Popular section title
                         'Popular',
                         style: TextStyle(
                           fontFamily: 'Georgia',
-                          fontSize: 25,
+                          fontSize: 25.sp,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 14), // Space sa ubos sa Popular title
+                      SizedBox(height: 14.h), // Space sa ubos sa Popular title
                     ],
                   ),
                 ),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Column(
                       children: [
                         // 3 small boxes sa taas
@@ -474,57 +475,53 @@ class _HomeScreenState extends State<HomeScreen> {
                               coverUrl: isLoadingPopular || popularCoverUrls.isEmpty
                                   ? null
                                   : popularCoverUrls[0],
-                              width: smallBoxSize,
-                              height: smallBoxSize,
+                              width: smallBoxSize.w,
+                              height: smallBoxSize.h,
                             ),
                             _buildPopularBox(
                               coverUrl: isLoadingPopular || popularCoverUrls.length < 2
                                   ? null
                                   : popularCoverUrls[1],
-                              width: smallBoxSize,
-                              height: smallBoxSize,
+                              width: smallBoxSize.w,
+                              height: smallBoxSize.h,
                             ),
                             _buildPopularBox(
                               coverUrl: isLoadingPopular || popularCoverUrls.length < 3
                                   ? null
                                   : popularCoverUrls[2],
-                              width: smallBoxSize,
-                              height: smallBoxSize,
+                              width: smallBoxSize.w,
+                              height: smallBoxSize.h,
                             ),
                           ],
                         ),
-                        const SizedBox(height: boxSpacing),
+                        SizedBox(height: boxSpacing.h),
                         // 2 large boxes sa ubos
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: boxSpacing),
+                              padding: EdgeInsets.symmetric(horizontal: boxSpacing.w),
                               child: _buildPopularBox(
-                                coverUrl: isLoadingPopular ||
-                                        popularCoverUrls.length < 4
+                                coverUrl: isLoadingPopular || popularCoverUrls.length < 4
                                     ? null
                                     : popularCoverUrls[3],
-                                width: largeBoxSize,
-                                height: largeBoxSize,
+                                width: largeBoxSize.w,
+                                height: largeBoxSize.h,
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: boxSpacing),
+                              padding: EdgeInsets.symmetric(horizontal: boxSpacing.w),
                               child: _buildPopularBox(
-                                coverUrl: isLoadingPopular ||
-                                        popularCoverUrls.length < 5
+                                coverUrl: isLoadingPopular || popularCoverUrls.length < 5
                                     ? null
                                     : popularCoverUrls[4],
-                                width: largeBoxSize,
-                                height: largeBoxSize,
+                                width: largeBoxSize.w,
+                                height: largeBoxSize.h,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20), // Space sa ubos sa grid
+                        SizedBox(height: 20.h), // Space sa ubos sa grid
                       ],
                     ),
                   ),
@@ -550,16 +547,16 @@ class _GenreChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 5, 0, 0),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
         ),
         child: Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 15,
+            fontSize: 15.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
