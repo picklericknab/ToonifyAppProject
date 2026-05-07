@@ -16,12 +16,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  static const String _pfpKey = 'profile_picture_path';
   static const String _loggedInEmailKey = 'logged_in_email';
 
   String? _pfpPath;
   String _username = '';
   String _email = '';
+  String get _pfpKey => 'profile_picture_path_${_email.toLowerCase()}';
 
   final ImagePicker _picker = ImagePicker();
 
@@ -33,10 +33,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
-    final pfp = prefs.getString(_pfpKey);
     final email = prefs.getString(_loggedInEmailKey) ?? '';
     final username = AuthService.currentUser?.displayName ??
         await AuthService.getUsername(email);
+
+    final pfpKey = 'profile_picture_path_${email.toLowerCase()}';
+    final pfp = prefs.getString(pfpKey);
 
     if (mounted) {
       setState(() {
@@ -82,6 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Ma save ang pfp based sa email na gigamit
   Future<void> _selectImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -90,6 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
       if (image != null) {
         final prefs = await SharedPreferences.getInstance();
+        // email based key
         await prefs.setString(_pfpKey, image.path);
         if (mounted) {
           setState(() => _pfpPath = image.path);
@@ -124,6 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           TextButton(
             onPressed: () async {
+              // Logic nga mo sign out sa FIREBASE authentication
               await AuthService.signOut();
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove(_loggedInEmailKey);
@@ -273,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       GestureDetector(
                         onTap: _handleLogout,
                         child: Container(
-                          width: 15,
+                          width: 42,
                           height: 42,
                           decoration: BoxDecoration(
                             color: const Color(0xFF3D3D3D),
@@ -321,6 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                           ),
                         ),
+                        // Camera icon
                         Positioned(
                           bottom: 4,
                           right: 4,
@@ -347,6 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                // Username ug email
                 Center(
                   child: Column(
                     children: [

@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HistoryService {
   static final HistoryService _instance = HistoryService._internal();
   factory HistoryService() => _instance;
   HistoryService._internal();
 
-  static const String _historyKey = 'reading_history';
   static SharedPreferences? _prefs;
+
   static Future<void> init() async {
     _prefs ??= await SharedPreferences.getInstance();
   }
@@ -15,6 +16,12 @@ class HistoryService {
   static Future<SharedPreferences> _getPrefs() async {
     _prefs ??= await SharedPreferences.getInstance();
     return _prefs!;
+  }
+
+  // History kay base na sa email sa user
+  String get _historyKey {
+    final email = FirebaseAuth.instance.currentUser?.email ?? 'guest';
+    return 'reading_history_${email.toLowerCase()}';
   }
 
   Future<List<Map<String, dynamic>>> _loadHistory() async {
@@ -52,7 +59,6 @@ class HistoryService {
     await _saveHistory(history);
   }
 
-  // Mo update sa chapter number
   Future<void> updateChapter({
     required String mangaId,
     required String chapterNumber,
@@ -65,6 +71,7 @@ class HistoryService {
     }
   }
 
+  // Mawala ang current histiry sa user since ma save man to
   Future<void> clearHistory() async {
     final prefs = await _getPrefs();
     await prefs.remove(_historyKey);
