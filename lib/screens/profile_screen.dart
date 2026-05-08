@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,14 +21,17 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   static const String _loggedInEmailKey = 'logged_in_email';
 
-  String? _pfpPath;
+  String? _pfpBase64;
   String _username = '';
   String _email = '';
 
-  // Ang pfp key kay naka-base sa email para lain ang pfp kada account
-  String get _pfpKey => 'profile_picture_path_${_email.toLowerCase()}';
-
   final ImagePicker _picker = ImagePicker();
+
+  DocumentReference? get _profileRef {
+    final uid = AuthService.currentUser?.uid;
+    if (uid == null) return null;
+    return FirebaseFirestore.instance.collection('users').doc(uid);
+  }
 
   @override
   void initState() {
@@ -39,12 +44,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final email = prefs.getString(_loggedInEmailKey) ?? '';
     final username = AuthService.currentUser?.displayName ??
         await AuthService.getUsername(email);
-    final pfpKey = 'profile_picture_path_${email.toLowerCase()}';
-    final pfp = prefs.getString(pfpKey);
+
+    String? pfpBase64;
+    try {
+      if (_profileRef != null) {
+        final doc = await _profileRef!.get();
+        if (doc.exists) {
+          final data = doc.data() as Map<String, dynamic>?;
+          pfpBase64 = data?['pfpBase64'] as String?;
+        }
+      }
+    } catch (e) {
+      // Silent fail
+    }
 
     if (mounted) {
       setState(() {
-        _pfpPath = pfp;
+        _pfpBase64 = pfpBase64;
         _username = username;
         _email = email;
       });
@@ -86,19 +102,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Ma save ang pfp based sa email na gigamit
+  // Mo convert sa image into base64
   Future<void> _selectImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(
         source: source,
-        imageQuality: 80,
+        imageQuality: 50, // Quality sa pfp
+        maxWidth: 400,
+        maxHeight: 400,
       );
       if (image != null) {
-        final prefs = await SharedPreferences.getInstance();
-        // email based key
-        await prefs.setString(_pfpKey, image.path);
+        final bytes = await File(image.path).readAsBytes();
+        final base64String = base64Encode(bytes);
+
+        if (_profileRef != null) {
+          await _profileRef!.set(
+            {'pfpBase64': base64String},
+            SetOptions(merge: true),
+          );
+        }
+
         if (mounted) {
-          setState(() => _pfpPath = image.path);
+          setState(() => _pfpBase64 = base64String);
         }
       }
     } catch (e) {
@@ -318,20 +343,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: const Color(0xFF1A1A1A),
                           ),
                           child: ClipOval(
-                            child: _pfpPath != null &&
-                                    File(_pfpPath!).existsSync()
-                                ? Image.file(
-                                    File(_pfpPath!),
+                            // Base 64 na pic
+                            child: _pfpBase64 != null
+                                ? Image.memory(
+                                    base64Decode(_pfpBase64!),
                                     fit: BoxFit.cover,
-                                  ): 
-                                  Icon(
+                                  )
+                                : Icon(
                                     Icons.person,
                                     size: 100.sp,
                                     color: Colors.black54,
                                   ),
                           ),
                         ),
-                        // Camera icon 
+                        // Camera icon
                         Positioned(
                           bottom: 4.h,
                           right: 4.w,
