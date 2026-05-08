@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
@@ -21,6 +22,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _pfpPath;
   String _username = '';
   String _email = '';
+
+  // Ang pfp key kay naka-base sa email para lain ang pfp kada account
   String get _pfpKey => 'profile_picture_path_${_email.toLowerCase()}';
 
   final ImagePicker _picker = ImagePicker();
@@ -36,7 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final email = prefs.getString(_loggedInEmailKey) ?? '';
     final username = AuthService.currentUser?.displayName ??
         await AuthService.getUsername(email);
-
     final pfpKey = 'profile_picture_path_${email.toLowerCase()}';
     final pfp = prefs.getString(pfpKey);
 
@@ -53,26 +55,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF3D3D3D),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library, color: Colors.white),
-              title: const Text('Choose from Gallery',
-                  style: TextStyle(color: Colors.white)),
+              leading: Icon(Icons.photo_library, color: Colors.white, size: 24.sp),
+              title: Text('Choose from Gallery',
+                  style: TextStyle(color: Colors.white, fontSize: 15.sp)),
               onTap: () async {
                 Navigator.pop(context);
                 await _selectImage(ImageSource.gallery);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: Colors.white),
-              title: const Text('Take a Photo',
-                  style: TextStyle(color: Colors.white)),
+              leading: Icon(Icons.camera_alt, color: Colors.white, size: 24.sp),
+              title: Text('Take a Photo',
+                  style: TextStyle(color: Colors.white, fontSize: 15.sp)),
               onTap: () async {
                 Navigator.pop(context);
                 await _selectImage(ImageSource.camera);
@@ -102,8 +104,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not access gallery or camera. Please check app permissions in your phone settings.'),
+          SnackBar(
+            content: Text(
+              'Could not access gallery or camera. Please check app permissions in your phone settings.',
+              style: TextStyle(fontSize: 13.sp),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -116,15 +121,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF3D3D3D),
-        title: const Text('Log Out',
-            style: TextStyle(color: Colors.white)),
-        content: const Text('Are you sure you want to log out?',
-            style: TextStyle(color: Colors.white70)),
+        title: Text('Log Out',
+            style: TextStyle(color: Colors.white, fontSize: 18.sp)),
+        content: Text('Are you sure you want to log out?',
+            style: TextStyle(color: Colors.white70, fontSize: 14.sp)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel',
-                style: TextStyle(color: Colors.grey)),
+            child: Text('Cancel',
+                style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
           ),
           TextButton(
             onPressed: () async {
@@ -140,8 +145,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               }
             },
-            child: const Text('Log Out',
-                style: TextStyle(color: Colors.redAccent)),
+            child: Text('Log Out',
+                style: TextStyle(color: Colors.redAccent, fontSize: 14.sp)),
           ),
         ],
       ),
@@ -153,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF2A2A2A),
       bottomNavigationBar: Container(
-        height: 65,
+        height: 65.h,
         decoration: const BoxDecoration(
           color: Color(0xFF1E1E1E),
           border: Border(
@@ -164,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: const Icon(Icons.home, color: Colors.grey, size: 28),
+              icon: Icon(Icons.home, color: Colors.grey, size: 28.sp),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -174,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
+              icon: Icon(Icons.menu_book, color: Colors.grey, size: 28.sp),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -183,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.person, color: Colors.white, size: 28),
+              icon: Icon(Icons.person, color: Colors.white, size: 28.sp),
               onPressed: () {},
             ),
           ],
@@ -192,62 +197,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Stack(
         children: [
           Positioned(
-            top: -30,
-            left: 40,
+            top: -30.h,
+            left: 40.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 231, 230, 230),
-                borderRadius: BorderRadius.circular(180),
+                borderRadius: BorderRadius.circular(180.r),
               ),
             ),
           ),
           Positioned(
-            top: -80,
-            left: 70,
+            top: -80.h,
+            left: 70.w,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 180.w,
+              height: 180.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(140),
+                borderRadius: BorderRadius.circular(140.r),
               ),
             ),
           ),
           Positioned(
-            top: -30,
-            left: -50,
+            top: -30.h,
+            left: -50.w,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 180.w,
+              height: 180.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(120),
+                borderRadius: BorderRadius.circular(120.r),
               ),
             ),
           ),
           Positioned(
-            top: -60,
-            right: -75,
+            top: -60.h,
+            right: -75.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(160),
+                borderRadius: BorderRadius.circular(160.r),
               ),
             ),
           ),
           Positioned(
-            bottom: -135,
-            right: -75,
+            bottom: -135.h,
+            right: -75.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(160),
+                borderRadius: BorderRadius.circular(160.r),
               ),
             ),
           ),
@@ -256,17 +261,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Row(
                     children: [
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       Transform.translate(
-                        offset: const Offset(-14, -6),
-                        child: const Text(
+                        offset: Offset(-14.w, -6.h),
+                        child: Text(
                           'Profile',
                           style: TextStyle(
                             fontFamily: 'Georgia',
-                            fontSize: 37,
+                            fontSize: 37.sp,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -278,23 +283,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       GestureDetector(
                         onTap: _handleLogout,
                         child: Container(
-                          width: 42,
-                          height: 42,
+                          width: 42.w,
+                          height: 42.h,
                           decoration: BoxDecoration(
                             color: const Color(0xFF3D3D3D),
-                            borderRadius: BorderRadius.circular(21),
+                            borderRadius: BorderRadius.circular(21.r),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.logout,
                             color: Colors.white,
-                            size: 22,
+                            size: 22.sp,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 50),
+                SizedBox(height: 50.h),
                 // Profile picture sa tunga
                 Center(
                   child: GestureDetector(
@@ -302,13 +307,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Stack(
                       children: [
                         Container(
-                          width: 150,
-                          height: 150,
+                          width: 150.w,
+                          height: 150.w,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.white,
-                              width: 3,
+                              width: 3.w,
                             ),
                             color: const Color(0xFF1A1A1A),
                           ),
@@ -318,33 +323,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? Image.file(
                                     File(_pfpPath!),
                                     fit: BoxFit.cover,
-                                  )
-                                : const Icon(
+                                  ): 
+                                  Icon(
                                     Icons.person,
-                                    size: 100,
+                                    size: 100.sp,
                                     color: Colors.black54,
                                   ),
                           ),
                         ),
-                        // Camera icon
+                        // Camera icon 
                         Positioned(
-                          bottom: 4,
-                          right: 4,
+                          bottom: 4.h,
+                          right: 4.w,
                           child: Container(
-                            width: 34,
-                            height: 34,
+                            width: 34.w,
+                            height: 34.w,
                             decoration: BoxDecoration(
                               color: const Color(0xFF4CAF50),
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: const Color(0xFF2A2A2A),
-                                width: 2,
+                                width: 2.w,
                               ),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.camera_alt,
                               color: Colors.white,
-                              size: 18,
+                              size: 18.sp,
                             ),
                           ),
                         ),
@@ -352,37 +357,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 // Username ug email
                 Center(
                   child: Column(
                     children: [
                       Text(
                         _username,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 26,
+                          fontSize: 26.sp,
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.italic,
                           fontFamily: 'Georgia',
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6.h),
                       Text(
                         _email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white70,
-                          fontSize: 15,
+                          fontSize: 15.sp,
                           fontStyle: FontStyle.italic,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: 40.h),
                 // Settings row
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -394,27 +399,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       children: [
                         Container(
-                          width: 44,
-                          height: 44,
+                          width: 44.w,
+                          height: 44.h,
                           decoration: BoxDecoration(
                             color: const Color(0xFF3D3D3D),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.settings,
                             color: Colors.white,
-                            size: 26,
+                            size: 26.sp,
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        const Column(
+                        SizedBox(width: 16.w),
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Settings',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 17,
+                                fontSize: 17.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -422,16 +427,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               'Downloads, Security',
                               style: TextStyle(
                                 color: Colors.white54,
-                                fontSize: 13,
+                                fontSize: 13.sp,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
                           ],
                         ),
                         const Spacer(),
-                        const Icon(
+                        Icon(
                           Icons.chevron_right,
                           color: Colors.white54,
+                          size: 24.sp,
                         ),
                       ],
                     ),

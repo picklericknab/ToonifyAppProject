@@ -21,8 +21,8 @@ class FeaturedScreen extends StatefulWidget {
 
 class _FeaturedScreenState extends State<FeaturedScreen> {
 
-  static const double smallBoxSize = 115.0;
-  static const double largeBoxSize = 130.0;
+  static const double smallBoxSize = 100.0;
+  static const double largeBoxSize = 100.0;
   static const double boxSpacing = 10.0;
   static const double boxBorderRadius = 20.0;
 
@@ -388,7 +388,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                               MaterialPageRoute(builder: (_) => const RomanceScreen()),
                             ),
                           ),
-                          SizedBox(width: 40.w),
+                          SizedBox(width: 31.w),
                           _GenreChip(
                             label: 'Action',
                             onTap: () => Navigator.push(
@@ -396,7 +396,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                               MaterialPageRoute(builder: (_) => const ActionScreen()),
                             ),
                           ),
-                          SizedBox(width: 40.w),
+                          SizedBox(width: 32.w),
                           _GenreChip(
                             label: 'Horror',
                             onTap: () => Navigator.push(
@@ -406,7 +406,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 24.h), // Space sa ubos sa chips
+                      SizedBox(height: 20.h), // Space sa ubos sa chips
                       Text(
                         'Hot',
                         style: TextStyle(
@@ -417,7 +417,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 12.h), // Space sa ubos sa Featured title
+                      SizedBox(height: 9.h), // Space ubos sa HOT
                       isLoadingHot
                           ? Container(
                               width: double.infinity,
@@ -506,7 +506,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _buildCoverImage(
                               coverUrl: isLoadingRecommended || recommendedList.isEmpty
@@ -518,6 +518,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                                   ? null
                                   : recommendedList[0],
                             ),
+                            SizedBox(width: boxSpacing.w),
                             _buildCoverImage(
                               coverUrl: isLoadingRecommended || recommendedList.length < 2
                                   ? null
@@ -528,6 +529,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                                   ? null
                                   : recommendedList[1],
                             ),
+                            SizedBox(width: boxSpacing.w),
                             _buildCoverImage(
                               coverUrl: isLoadingRecommended || recommendedList.length < 3
                                   ? null
@@ -545,31 +547,26 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: boxSpacing.w),
-                              child: _buildCoverImage(
-                                coverUrl: isLoadingRecommended || recommendedList.length < 4
-                                    ? null
-                                    : recommendedList[3]['coverUrl'],
-                                width: largeBoxSize.w,
-                                height: largeBoxSize.h,
-                                mangaData: isLoadingRecommended || recommendedList.length < 4
-                                    ? null
-                                    : recommendedList[3],
-                              ),
+                            _buildCoverImage(
+                              coverUrl: isLoadingRecommended || recommendedList.length < 4
+                                  ? null
+                                  : recommendedList[3]['coverUrl'],
+                              width: largeBoxSize.w,
+                              height: largeBoxSize.h,
+                              mangaData: isLoadingRecommended || recommendedList.length < 4
+                                  ? null
+                                  : recommendedList[3],
                             ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: boxSpacing.w),
-                              child: _buildCoverImage(
-                                coverUrl: isLoadingRecommended || recommendedList.length < 5
-                                    ? null
-                                    : recommendedList[4]['coverUrl'],
-                                width: largeBoxSize.w,
-                                height: largeBoxSize.h,
-                                mangaData: isLoadingRecommended || recommendedList.length < 5
-                                    ? null
-                                    : recommendedList[4],
-                              ),
+                            SizedBox(width: boxSpacing.w),
+                            _buildCoverImage(
+                              coverUrl: isLoadingRecommended || recommendedList.length < 5
+                                  ? null
+                                  : recommendedList[4]['coverUrl'],
+                              width: largeBoxSize.w,
+                              height: largeBoxSize.h,
+                              mangaData: isLoadingRecommended || recommendedList.length < 5
+                                  ? null
+                                  : recommendedList[4],
                             ),
                           ],
                         ),

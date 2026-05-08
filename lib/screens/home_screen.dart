@@ -21,8 +21,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // Size sa mga box usba lang
-  static const double smallBoxSize = 115.0;
-  static const double largeBoxSize = 130.0;
+  static const double smallBoxSize = 100.0;
+  static const double largeBoxSize = 100.0;
   static const double boxSpacing = 10.0;
   static const double boxBorderRadius = 20.0;
 
@@ -355,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               MaterialPageRoute(builder: (_) => const RomanceScreen()),
                             ),
                           ),
-                          SizedBox(width: 40.w),
+                          SizedBox(width: 31.w),
                           _GenreChip(
                             label: 'Action',
                             onTap: () => Navigator.push(
@@ -363,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               MaterialPageRoute(builder: (_) => const ActionScreen()),
                             ),
                           ),
-                          SizedBox(width: 40.w),
+                          SizedBox(width: 32.w),
                           _GenreChip(
                             label: 'Horror',
                             onTap: () => Navigator.push(
@@ -373,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 24.h),
+                      SizedBox(height: 20.h),
                       Text( // Featured section title
                         'Featured',
                         style: TextStyle(
@@ -384,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 12.h), // Space sa ubos sa Featured title
+                      SizedBox(height: 9.h), // Space sa ubos sa Featured title
                       isLoadingFeatured
                           ? Container(
                               width: double.infinity,
@@ -469,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         // 3 small boxes sa taas
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _buildPopularBox(
                               coverUrl: isLoadingPopular || popularCoverUrls.isEmpty
@@ -478,6 +478,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: smallBoxSize.w,
                               height: smallBoxSize.h,
                             ),
+                            SizedBox(width: boxSpacing.w),
                             _buildPopularBox(
                               coverUrl: isLoadingPopular || popularCoverUrls.length < 2
                                   ? null
@@ -485,6 +486,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: smallBoxSize.w,
                               height: smallBoxSize.h,
                             ),
+                            SizedBox(width: boxSpacing.w),
                             _buildPopularBox(
                               coverUrl: isLoadingPopular || popularCoverUrls.length < 3
                                   ? null
@@ -499,25 +501,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: boxSpacing.w),
-                              child: _buildPopularBox(
-                                coverUrl: isLoadingPopular || popularCoverUrls.length < 4
-                                    ? null
-                                    : popularCoverUrls[3],
-                                width: largeBoxSize.w,
-                                height: largeBoxSize.h,
-                              ),
+                            _buildPopularBox(
+                              coverUrl: isLoadingPopular || popularCoverUrls.length < 4
+                                  ? null
+                                  : popularCoverUrls[3],
+                              width: largeBoxSize.w,
+                              height: largeBoxSize.h,
                             ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: boxSpacing.w),
-                              child: _buildPopularBox(
-                                coverUrl: isLoadingPopular || popularCoverUrls.length < 5
-                                    ? null
-                                    : popularCoverUrls[4],
-                                width: largeBoxSize.w,
-                                height: largeBoxSize.h,
-                              ),
+                            SizedBox(width: boxSpacing.w),
+                            _buildPopularBox(
+                              coverUrl: isLoadingPopular || popularCoverUrls.length < 5
+                                  ? null
+                                  : popularCoverUrls[4],
+                              width: largeBoxSize.w,
+                              height: largeBoxSize.h,
                             ),
                           ],
                         ),

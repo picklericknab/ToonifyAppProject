@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:toonifyapp/screens/history_screen.dart';
 import 'package:toonifyapp/screens/profile_screen.dart';
 import '../reader/app_description.dart';
@@ -22,7 +23,8 @@ class _PopularScreenState extends State<PopularScreen> {
   // Size sa mga box usba lang
   static const double boxBorderRadius = 20.0;
   static const double wideBannerHeight = 160.0;
-  static const double mediumBoxSize = 155.0;
+  static const double mediumBoxSize = 130.0;
+  static const double boxSpacing = 28.0;
 
   List<Map<String, dynamic>> popularList = [];
   bool isLoading = true;
@@ -104,12 +106,12 @@ class _PopularScreenState extends State<PopularScreen> {
       height: height,
       decoration: BoxDecoration(
         color: const Color(0xFF454545),
-        borderRadius: BorderRadius.circular(boxBorderRadius),
+        borderRadius: BorderRadius.circular(boxBorderRadius.r),
       ),
-      child: const Center(
+      child: Center(
         child: CircularProgressIndicator(
           color: Colors.white,
-          strokeWidth: 2,
+          strokeWidth: 2.w,
         ),
       ),
     );
@@ -140,7 +142,7 @@ class _PopularScreenState extends State<PopularScreen> {
             }
           : null,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(boxBorderRadius),
+        borderRadius: BorderRadius.circular(boxBorderRadius.r),
         child: CachedNetworkImage(
           imageUrl: coverUrl,
           width: width,
@@ -154,7 +156,7 @@ class _PopularScreenState extends State<PopularScreen> {
             height: height,
             decoration: BoxDecoration(
               color: const Color(0xFF454545),
-              borderRadius: BorderRadius.circular(boxBorderRadius),
+              borderRadius: BorderRadius.circular(boxBorderRadius.r),
             ),
             child: const Icon(Icons.broken_image, color: Colors.grey),
           ),
@@ -168,7 +170,7 @@ class _PopularScreenState extends State<PopularScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF2A2A2A),
       bottomNavigationBar: Container(
-        height: 65,
+        height: 65.h,
         decoration: const BoxDecoration(
           color: Color(0xFF1E1E1E),
           border: Border(
@@ -179,7 +181,7 @@ class _PopularScreenState extends State<PopularScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: const Icon(Icons.home, color: Colors.grey, size: 28),
+              icon: Icon(Icons.home, color: Colors.grey, size: 28.sp),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -189,7 +191,7 @@ class _PopularScreenState extends State<PopularScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.menu_book, color: Colors.grey, size: 28),
+              icon: Icon(Icons.menu_book, color: Colors.grey, size: 28.sp),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -198,7 +200,7 @@ class _PopularScreenState extends State<PopularScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.person, color: Colors.grey, size: 28),
+              icon: Icon(Icons.person, color: Colors.grey, size: 28.sp),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -212,62 +214,62 @@ class _PopularScreenState extends State<PopularScreen> {
       body: Stack(
         children: [
           Positioned(
-            top: -30,
-            left: 40,
+            top: -30.h,
+            left: 40.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 231, 230, 230),
-                borderRadius: BorderRadius.circular(180),
+                borderRadius: BorderRadius.circular(180.r),
               ),
             ),
           ),
           Positioned(
-            top: -80,
-            left: 70,
+            top: -80.h,
+            left: 70.w,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 180.w,
+              height: 180.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(140),
+                borderRadius: BorderRadius.circular(140.r),
               ),
             ),
           ),
           Positioned(
-            top: -30,
-            left: -50,
+            top: -30.h,
+            left: -50.w,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 180.w,
+              height: 180.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(120),
+                borderRadius: BorderRadius.circular(120.r),
               ),
             ),
           ),
           Positioned(
-            top: -60,
-            right: -75,
+            top: -60.h,
+            right: -75.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(160),
+                borderRadius: BorderRadius.circular(160.r),
               ),
             ),
           ),
           Positioned(
-            bottom: -135,
-            right: -75,
+            bottom: -135.h,
+            right: -75.w,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 170.w,
+              height: 170.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF3D3D3D),
-                borderRadius: BorderRadius.circular(160),
+                borderRadius: BorderRadius.circular(160.r),
               ),
             ),
           ),
@@ -277,25 +279,25 @@ class _PopularScreenState extends State<PopularScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       Transform.translate( // Mao ni ang Popular header
-                        offset: const Offset(-14, -25),
-                        child: const Text(
+                        offset: Offset(-14.w, -25.h),
+                        child: Text(
                           'Popular',
                           style: TextStyle(
                             fontFamily: 'Georgia',
-                            fontSize: 37,
+                            fontSize: 37.sp,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 45), // Space ubos sa header
+                      SizedBox(height: 45.h), // Space ubos sa header
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -305,25 +307,25 @@ class _PopularScreenState extends State<PopularScreen> {
                           );
                         },
                         child: Container(
-                          height: 50,
+                          height: 50.h,
                           decoration: BoxDecoration(
                             color: const Color(0xFF3D3D3D),
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(25.r),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              SizedBox(width: 12),
-                              Icon(Icons.search, color: Colors.grey),
-                              SizedBox(width: 8),
+                              SizedBox(width: 12.w),
+                              Icon(Icons.search, color: Colors.grey, size: 20.sp),
+                              SizedBox(width: 8.w),
                               Text(
                                 'Search',
-                                style: TextStyle(color: Colors.grey, fontSize: 16),
+                                style: TextStyle(color: Colors.grey, fontSize: 16.sp),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20), // Space sa ubos sa search bar
+                      SizedBox(height: 20.h), // Space sa ubos sa search bar
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -334,7 +336,7 @@ class _PopularScreenState extends State<PopularScreen> {
                               MaterialPageRoute(builder: (_) => const RomanceScreen()),
                             ),
                           ),
-                          const SizedBox(width: 40),
+                          SizedBox(width: 31.w),
                           _GenreChip(
                             label: 'Action',
                             onTap: () => Navigator.push(
@@ -342,7 +344,7 @@ class _PopularScreenState extends State<PopularScreen> {
                               MaterialPageRoute(builder: (_) => const ActionScreen()),
                             ),
                           ),
-                          const SizedBox(width: 40),
+                          SizedBox(width: 32.w),
                           _GenreChip(
                             label: 'Horror',
                             onTap: () => Navigator.push(
@@ -352,13 +354,13 @@ class _PopularScreenState extends State<PopularScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.h),
                     ],
                   ),
                 ),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 33),
+                    padding: EdgeInsets.symmetric(horizontal: 33.w),
                     child: Column(
                       children: [
                         _buildCoverImage(
@@ -366,64 +368,66 @@ class _PopularScreenState extends State<PopularScreen> {
                               ? null
                               : popularList[0]['coverUrl'],
                           width: double.infinity,
-                          height: wideBannerHeight,
+                          height: wideBannerHeight.h,
                           mangaData: isLoading || popularList.isEmpty
                               ? null
                               : popularList[0],
                         ),
-                        const SizedBox(height: 28), // Space ubos sa wide banner
+                        SizedBox(height: 20.h), // Space ubos sa wide banner
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _buildCoverImage(
                               coverUrl: isLoading || popularList.length < 2
                                   ? null
                                   : popularList[1]['coverUrl'],
-                              width: mediumBoxSize,
-                              height: mediumBoxSize,
+                              width: mediumBoxSize.w,
+                              height: mediumBoxSize.h,
                               mangaData: isLoading || popularList.length < 2
                                   ? null
                                   : popularList[1],
                             ),
+                            SizedBox(width: boxSpacing.w),
                             _buildCoverImage(
                               coverUrl: isLoading || popularList.length < 3
                                   ? null
                                   : popularList[2]['coverUrl'],
-                              width: mediumBoxSize,
-                              height: mediumBoxSize,
+                              width: mediumBoxSize.w,
+                              height: mediumBoxSize.h,
                               mangaData: isLoading || popularList.length < 3
                                   ? null
                                   : popularList[2],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 28), // Space sa tunga sa rows
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        SizedBox(height: 28.h), // Space sa tunga sa rows
+                                                Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _buildCoverImage(
                               coverUrl: isLoading || popularList.length < 4
                                   ? null
                                   : popularList[3]['coverUrl'],
-                              width: mediumBoxSize,
-                              height: mediumBoxSize,
+                              width: mediumBoxSize.w,
+                              height: mediumBoxSize.h,
                               mangaData: isLoading || popularList.length < 4
                                   ? null
                                   : popularList[3],
                             ),
+                            SizedBox(width: boxSpacing.w),
                             _buildCoverImage(
                               coverUrl: isLoading || popularList.length < 5
                                   ? null
                                   : popularList[4]['coverUrl'],
-                              width: mediumBoxSize,
-                              height: mediumBoxSize,
+                              width: mediumBoxSize.w,
+                              height: mediumBoxSize.h,
                               mangaData: isLoading || popularList.length < 5
                                   ? null
                                   : popularList[4],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20), // Space sa ubos sa grid
+                        SizedBox(height: 20.h), // Space sa ubos sa grid
                       ],
                     ),
                   ),
@@ -449,16 +453,16 @@ class _GenreChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 5, 0, 0),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
         ),
         child: Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 15,
+            fontSize: 15.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
