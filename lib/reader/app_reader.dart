@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import '../services/history_service.dart';
 
 class AppReader extends StatefulWidget {
   // Data nga e hatag gikan sa app_description
@@ -52,16 +53,23 @@ class _AppReaderState extends State<AppReader> {
     super.dispose();
   }
 
-  void _handleBack() {
-    final double currentOffset =
-        _scrollController.hasClients ? _scrollController.offset : 0.0;
-    final String chapterNumber = (currentChapterIndex + 1).toString();
-    Navigator.pop(context, {
-      'chapterIndex': currentChapterIndex,
-      'scrollOffset': currentOffset,
-      'chapterNumber': chapterNumber,
-    });
-  }
+  void _handleBack() async {
+  final double currentOffset =
+      _scrollController.hasClients ? _scrollController.offset : 0.0;
+
+  final String chapterNumber = (currentChapterIndex + 1).toString();
+
+  await HistoryService().updateChapter(
+    mangaId: widget.mangaId,
+    chapterNumber: chapterNumber,
+  );
+
+  Navigator.pop(context, {
+    'chapterIndex': currentChapterIndex,
+    'scrollOffset': currentOffset,
+    'chapterNumber': chapterNumber,
+  });
+}
 
   // Mao ni nga API part nga ma fetch ang chapters
   Future<void> fetchAllChapters() async {

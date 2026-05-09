@@ -25,10 +25,9 @@ class AppDescription extends StatefulWidget {
 
 class _AppDescriptionState extends State<AppDescription> {
 
-  // Blur o height sa banner
   final double blurAmount = 6.0;
   final double bannerHeight = 240.0;
-  
+
   // Size sa cover
   final double coverWidth = 130.0;
   final double coverHeight = 190.0;
@@ -38,8 +37,6 @@ class _AppDescriptionState extends State<AppDescription> {
   final double descContainerTopOffset = 30.0;
   final double descContainerHeight = 340.0;
   final double descFontSize = 18.5;
-
-  // Ari usba ang start reading button
   final double buttonWidth = 260.0;
   final double buttonHeight = 55.0;
   final double buttonRadius = 30.0;
@@ -85,8 +82,12 @@ class _AppDescriptionState extends State<AppDescription> {
                 ? attributes['description'].values.first
                 : 'No description available.');
 
-        final sentences = fullDesc.split(RegExp(r'(?<=[.!?])\s+'));
-        final summarized = sentences.take(3).join(' ');
+        final sentences = fullDesc
+          .split(RegExp(r'(?<=[.!?])\s+'))
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+
+        final summarized = sentences.take(6).join(' ');
 
         if (mounted) {
           setState(() {
@@ -107,7 +108,7 @@ class _AppDescriptionState extends State<AppDescription> {
   }
 
   Future<void> _openReader() async {
-    _historyService.addToHistory(
+    await _historyService.addToHistory(
       mangaId: widget.mangaId,
       title: widget.title,
       coverUrl: widget.coverUrl,
@@ -134,8 +135,7 @@ class _AppDescriptionState extends State<AppDescription> {
         savedChapterNumber = result['chapterNumber'] ?? '1';
       });
 
-      // e update ang chapter sa history
-      _historyService.updateChapter(
+      await _historyService.updateChapter(
         mangaId: widget.mangaId,
         chapterNumber: savedChapterNumber,
       );
@@ -147,6 +147,9 @@ class _AppDescriptionState extends State<AppDescription> {
     final double coverStartY = bannerHeight - coverOverlap;
     final double coverEndY = coverStartY + coverHeight;
     final double descTop = coverEndY + descContainerTopOffset;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final titleAreaLeft = coverWidth + 28 + 16;
+    final titleAreaWidth = screenWidth - titleAreaLeft - 16;
 
     return Scaffold(
       backgroundColor: const Color(0xFF2A2A2A),
@@ -197,7 +200,6 @@ class _AppDescriptionState extends State<AppDescription> {
             ),
           ),
 
-          // Naa dri ang background
           Positioned(
             top: bannerHeight,
             left: 0,
@@ -236,19 +238,42 @@ class _AppDescriptionState extends State<AppDescription> {
             ),
           ),
 
-          // Title sa manga
           Positioned(
-            top: coverStartY + (coverHeight * 0.55),
+            top: coverStartY + (coverHeight * 0.40),
             left: coverWidth + 28,
-            right: 16,
-            child: Text(
-              widget.title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Georgia',
-                height: 1.3,
+            child: SizedBox(
+              width: titleAreaWidth,
+              height: coverHeight * 0.7,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Fontsize variables sa title
+                  double fontSize = 24;
+                  if (widget.title.length > 30) fontSize = 25;
+                  if (widget.title.length > 40) fontSize = 23;
+                  if (widget.title.length > 50) fontSize = 21;
+                  if (widget.title.length > 60) fontSize = 19;
+                  if (widget.title.length > 70) fontSize = 17;
+                  if (widget.title.length > 80) fontSize = 15;
+
+                  return SizedBox(
+                    height: coverHeight * 0.6,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Georgia',
+                          height: 1.3,
+                        ),
+                        maxLines: 5,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),

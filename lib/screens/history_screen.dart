@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:toonifyapp/screens/profile_screen.dart';
-import '../reader/app_description.dart';
 import '../services/history_service.dart';
 import 'home_screen.dart';
+import '../reader/app_reader.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -41,14 +41,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _loadHistory() async {
-    final results = await _historyService.search(_searchQuery);
-    if (mounted) {
-      setState(() {
-        _displayList = results;
-        _isLoading = false;
-      });
-    }
+  setState(() {
+    _isLoading = true;
+  });
+
+  await Future.delayed(const Duration(milliseconds: 150));
+
+  final results = await _historyService.search(_searchQuery);
+
+  if (mounted) {
+    setState(() {
+      _displayList = results;
+      _isLoading = false;
+    });
   }
+}
 
   // Clear history na logic
   void _confirmClearHistory() {
@@ -90,18 +97,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildHistoryCard(Map<String, dynamic> entry) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        final chapterNumber = entry['chapterNumber'];
+
+        await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AppDescription(
+            builder: (_) => AppReader(
               mangaId: entry['mangaId'],
               title: entry['title'],
-              coverUrl: entry['coverUrl'],
+              initialChapterIndex: ((int.tryParse(chapterNumber ?? '1') ?? 1) - 1)
+                .clamp(0, 999),
+              initialScrollOffset: 0.0,
             ),
           ),
         );
+
+        if (mounted) {
+          _loadHistory();
+        }
       },
+
       child: ClipRRect(
         borderRadius: BorderRadius.circular(cardBorderRadius),
         child: SizedBox(
