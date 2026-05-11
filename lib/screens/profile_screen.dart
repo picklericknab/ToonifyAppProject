@@ -160,8 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               // Logic nga mo sign out sa FIREBASE authentication
               await AuthService.signOut();
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.remove(_loggedInEmailKey);
+              
               if (mounted) {
                 Navigator.pushAndRemoveUntil(
                   context,

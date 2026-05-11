@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'services/auth_service.dart';
@@ -52,35 +51,44 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  bool _loading = true;
+  User? _user;
+
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            backgroundColor: Color(0xFF2A2A2A),
-            body: Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            ),
-          );
-        }
-
-        if (snapshot.hasData && snapshot.data != null) {
-          _saveLoggedInEmail(snapshot.data!.email ?? '');
-          return const HomeScreen();
-        }
-
-        return const LoginScreen();
-      },
-    );
+  void initState() {
+    super.initState();
+    _checkLogin();
   }
 
-  Future<void> _saveLoggedInEmail(String email) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('logged_in_email', email);
+  Future<void> _checkLogin() async {
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    _user = FirebaseAuth.instance.currentUser;
+
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    if (_loading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF2A2A2A),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
+
+    if (_user != null) {
+      return const HomeScreen();
+    }
+
+    return const LoginScreen();
   }
 }
