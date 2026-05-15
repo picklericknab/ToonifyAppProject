@@ -8,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
 import 'history_screen.dart';
-import 'login_screen.dart';
 import 'settings_screen.dart';
+import 'package:toonifyapp/main.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -160,11 +160,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               // Logic nga mo sign out sa FIREBASE authentication
               await AuthService.signOut();
-              
+
               if (mounted) {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  MaterialPageRoute(builder: (_) => const AuthWrapper()),
                   (route) => false,
                 );
               }
