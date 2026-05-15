@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toonifyapp/main.dart';
+import 'login_screen.dart';
 
 class SuccessRegisteredScreen extends StatelessWidget {
   const SuccessRegisteredScreen({super.key});
@@ -99,7 +99,7 @@ class SuccessRegisteredScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Mao ni ang success circle
+                  // Mao ni ang success circle 
                   Container(
                     width: 90,
                     height: 90,
@@ -142,7 +142,7 @@ class SuccessRegisteredScreen extends StatelessWidget {
                       // Balik sa Login
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (_) => const AuthWrapper()),
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
                         (route) => false,
                       );
                     },

@@ -20,7 +20,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  //send ang password reset email
+  //send ang password reset email 
   Future<void> _handleSendReset() async {
     if (emailCtrl.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -157,92 +157,82 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ),
           SafeArea(
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height,
-                ),
-                child: IntrinsicHeight(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 180),
-                        const Center( // Ari usba ang position sa Forgot Password text
-                          child: Text(
-                            'Forgot Password',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 40,
-                              fontStyle: FontStyle.italic,
-                              fontFamily: 'Georgia',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 40), // Space sa ubos sa title
-                        TextField( // Mao ni sa EMAIL
-                          controller: emailCtrl,
-                          style: const TextStyle(color: Colors.white),
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            hintStyle: const TextStyle(color: Colors.grey),
-                            filled: true,
-                            fillColor: const Color(0xFF454545),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 45), // Space sa Send Reset Link button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: isLoading ? null : _handleSendReset,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4CAF50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: isLoading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  )
-                                : const Text(
-                                    'Send Reset Link',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 20), // Space sa Back to Login
-                        GestureDetector(
-                          onTap: () {
-                            // Balik sa Login screen
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            'Back to Login',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                      ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 180),
+                  const Center( // Ari usba ang position sa Forgot Password text
+                    child: Text(
+                      'Forgot Password',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontStyle: FontStyle.italic,
+                        fontFamily: 'Georgia',
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 40), // Space sa ubos sa title
+                  TextField( // Mao ni sa EMAIL
+                    controller: emailCtrl,
+                    style: const TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      filled: true,
+                      fillColor: const Color(0xFF454545),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 45), // Space sa Send Reset Link button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : _handleSendReset,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4CAF50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            )
+                          : const Text(
+                              'Send Reset Link',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 20), // Space sa Back to Login
+                  GestureDetector(
+                    onTap: () {
+                      // Balik sa Login screen
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Back to Login',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
