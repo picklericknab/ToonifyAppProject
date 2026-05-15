@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'login_screen.dart';
 
 class SuccessRegisteredScreen extends StatelessWidget {
-  const SuccessRegisteredScreen({super.key});
+  final String ageRange;
+
+  const SuccessRegisteredScreen({
+    super.key,
+    required this.ageRange,
+  });
 
   @override
   Widget build(BuildContext context) {

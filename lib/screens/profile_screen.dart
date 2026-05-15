@@ -323,7 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 50.h),
+                SizedBox(height: 70.h),
                 // Profile picture sa tunga
                 Center(
                   child: GestureDetector(

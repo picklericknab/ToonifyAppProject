@@ -19,8 +19,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? emailError;
   String? passwordError;
   String? confirmError;
+  String? ageRangeError;
 
   bool isLoading = false;
+
+  // Age sa users
+  static const List<String> ageRangeOptions = [
+    'Under 13',
+    '13 – 17',
+    '18 – 24',
+    '25 – 34',
+    '35+',
+  ];
+
+  String? selectedAgeRange;
 
   @override
   void dispose() {
@@ -63,18 +75,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
+  String? _validateAgeRange() {
+    if (selectedAgeRange == null) return 'Please select your age range.';
+    return null;
+  }
+
   Future<void> _handleRegister() async {
     setState(() {
       usernameError = _validateUsername(usernameCtrl.text.trim());
       emailError = _validateEmail(emailCtrl.text.trim());
       passwordError = _validatePassword(passwordCtrl.text);
       confirmError = _validateConfirm(confirmCtrl.text);
+      ageRangeError = _validateAgeRange();
     });
 
     if (usernameError != null ||
         emailError != null ||
         passwordError != null ||
-        confirmError != null) return;
+        confirmError != null ||
+        ageRangeError != null) return;
 
     setState(() => isLoading = true);
 
@@ -98,7 +117,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => const SuccessRegisteredScreen()),
+            builder: (_) => SuccessRegisteredScreen(
+              ageRange: selectedAgeRange!,
+            ),
+          ),
         );
       }
     }
@@ -147,6 +169,86 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.only(left: 16, top: 6),
             child: Text(
               errorText,
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAgeRangeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 10),
+          child: Text(
+            'Age Range',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          decoration: BoxDecoration(
+            color: const Color(0xFF454545),
+            borderRadius: BorderRadius.circular(25),
+            border: ageRangeError != null
+                ? Border.all(color: Colors.red, width: 1.5)
+                : Border.all(color: Colors.transparent),
+          ),
+          child: Row(
+            children: ageRangeOptions.map((range) {
+              final isSelected = selectedAgeRange == range;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedAgeRange = range;
+                      ageRangeError = null;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFF4CAF50)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                      child: Text(
+                        range,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.grey,
+                          fontSize: 11,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        if (ageRangeError != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 6),
+            child: Text(
+              ageRangeError!,
               style: const TextStyle(
                 color: Colors.redAccent,
                 fontSize: 12,
@@ -223,7 +325,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
-          // Toonify header usba ang position ari
           Positioned(
             top: 37,
             left: 5,
@@ -259,7 +360,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 180),
+                        const SizedBox(height: 110), // Usba ari ang position sa SIGN UP
                         const Center(
                           child: Text(
                             'Sign up',
@@ -271,8 +372,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 40), // Space sa ubos sa Sign up
-                        // USERNAME field
+                        const SizedBox(height: 40),
                         _buildTextField(
                           controller: usernameCtrl,
                           hint: 'Username',
@@ -283,8 +383,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             }
                           },
                         ),
-                        const SizedBox(height: 20), // Space sa fields
-                        // EMAIL field
+                        const SizedBox(height: 20),
                         _buildTextField(
                           controller: emailCtrl,
                           hint: 'Email',
@@ -295,8 +394,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             }
                           },
                         ),
-                        const SizedBox(height: 20), // Kani pud
-                        // PASSWORD field
+                        const SizedBox(height: 20),
                         _buildTextField(
                           controller: passwordCtrl,
                           hint: 'Password',
@@ -308,8 +406,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             }
                           },
                         ),
-                        const SizedBox(height: 20), // Kani pud
-                        // CONFIRM PASSWORD field
+                        const SizedBox(height: 20),
                         _buildTextField(
                           controller: confirmCtrl,
                           hint: 'Confirm Password',
@@ -321,7 +418,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             }
                           },
                         ),
-                        const SizedBox(height: 35), // Space sa Register button
+                        const SizedBox(height: 20),
+                        _buildAgeRangeSelector(),
+                        const SizedBox(height: 35),
                         SizedBox(
                           width: double.infinity,
                           height: 55,
@@ -348,8 +447,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                           ),
                         ),
-                        const SizedBox(height: 20), // Space sa ubos sa button
-                        Row( // Mao ni ang already have an account
+                        const SizedBox(height: 20),
+                        Row(
                           children: [
                             const Text(
                               'already have an account?  ',
@@ -360,7 +459,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                // Balik sa Login screen
                                 Navigator.pop(context);
                               },
                               child: const Text(
@@ -374,6 +472,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),
@@ -387,7 +486,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-class MoonPainter extends CustomPainter { // Mao ni ang Moon
+class MoonPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.white.withOpacity(0.85);
