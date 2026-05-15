@@ -6,6 +6,7 @@ import 'package:toonifyapp/screens/history_screen.dart';
 import 'package:toonifyapp/screens/profile_screen.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
+import 'register_screen.dart';
 
 class HorrorScreen extends StatefulWidget {
   const HorrorScreen({super.key});
@@ -412,7 +413,6 @@ class _HorrorScreenState extends State<HorrorScreen> {
                         ),
                       ),
                       const SizedBox(height: 45),
-                      // Search bar
                       Container(
                         height: 50,
                         decoration: BoxDecoration(

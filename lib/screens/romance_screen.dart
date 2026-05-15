@@ -6,6 +6,7 @@ import 'package:toonifyapp/screens/history_screen.dart';
 import 'package:toonifyapp/screens/profile_screen.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
+import 'register_screen.dart';
 
 class RomanceScreen extends StatefulWidget {
   const RomanceScreen({super.key});
@@ -40,18 +41,49 @@ class _RomanceScreenState extends State<RomanceScreen> {
 
   late ScrollController _scrollController;
 
-  // Romance tag ID sa MangaDex
   static const String _romanceTagId =
       '423e2eae-a7a2-4a8b-ac03-a8351462d71d';
 
+  final List<String> _banKeywords = [
+    'boys love',
+    'yaoi',
+    'yuri',
+    'shounen ai',
+    'shoujo ai'
+  ];
+
+  bool _isBanned(Map<String, dynamic> manga) {
+    try {
+      final attributes = manga['attributes'];
+      final tags = attributes['tags'] as List? ?? [];
+
+      final tagNames = tags.map((t) {
+        return (t['attributes']?['name']?['en'] ?? '').toString().toLowerCase();
+      }).toList();
+
+      for (final banned in _banKeywords) {
+        for (final name in tagNames) {
+          if (name.contains(banned)) {
+            return true;
+          }
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
   List<Map<String, dynamic>> get _filteredList {
-    if (_searchQuery.isEmpty) return romanceList;
-    return romanceList
-        .where((manga) => manga['title']
-            .toString()
-            .toLowerCase()
-            .contains(_searchQuery.toLowerCase()))
-        .toList();
+    if (_searchQuery.isEmpty) {
+      return romanceList.where((m) => !_isBanned(m)).toList();
+    }
+    return romanceList.where((manga) {
+      final titleMatch = manga['title']
+          .toString()
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase());
+
+      return titleMatch && !_isBanned(manga);
+    }).toList();
   }
 
   @override
@@ -126,14 +158,17 @@ class _RomanceScreenState extends State<RomanceScreen> {
 
         List<Map<String, dynamic>> results = [];
         for (final manga in mangaList) {
+
+          if (_isBanned(manga)) continue;
+
           final mangaId = manga['id'];
           final attributes = manga['attributes'];
 
-          // 2 sentences na description
           String fullDesc = attributes['description']['en'] ??
               (attributes['description'].isNotEmpty
                   ? attributes['description'].values.first
                   : 'No description available.');
+
           final sentences = fullDesc.split(RegExp(r'(?<=[.!?])\s+'));
           final shortDesc = sentences.take(2).join(' ');
 
@@ -399,7 +434,7 @@ class _RomanceScreenState extends State<RomanceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      Transform.translate( // Mao ni ang Romance header
+                      Transform.translate(
                         offset: const Offset(-14, -25),
                         child: const Text(
                           'Romance',
@@ -413,7 +448,6 @@ class _RomanceScreenState extends State<RomanceScreen> {
                         ),
                       ),
                       const SizedBox(height: 45),
-                      // Search bar
                       Container(
                         height: 50,
                         decoration: BoxDecoration(
@@ -438,7 +472,6 @@ class _RomanceScreenState extends State<RomanceScreen> {
                     ],
                   ),
                 ),
-                // List of the cards nga part
                 Expanded(
                   child: isLoading
                       ? const Center(

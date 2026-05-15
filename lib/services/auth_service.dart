@@ -5,6 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static SharedPreferences? _prefs;
+
+  static String? currentAgeRange;
+
   static Future<void> init() async {
     _prefs ??= await SharedPreferences.getInstance();
   }
@@ -15,10 +18,14 @@ class AuthService {
   }
 
   static Future<String?> register(
-      String username, String email, String password) async {
+      String username, String email, String password, String ageRange) async {
     try {
       final prefs = await _getPrefs();
       await prefs.setString('username_${email.toLowerCase()}', username);
+      await prefs.setString('ageRange_${email.toLowerCase()}', ageRange);
+
+      currentAgeRange = ageRange;
+
       await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -26,7 +33,7 @@ class AuthService {
 
       await _auth.currentUser?.updateDisplayName(username);
 
-      return null; 
+      return null;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':
@@ -49,7 +56,12 @@ class AuthService {
         email: email,
         password: password,
       );
-      return null; 
+
+      final prefs = await _getPrefs();
+      final age = prefs.getString('ageRange_${email.toLowerCase()}');
+      currentAgeRange = age;
+
+      return null;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'user-not-found':
@@ -70,11 +82,10 @@ class AuthService {
     }
   }
 
-  // Mo send og email na logic since ga use ta ug firebase
   static Future<String?> sendPasswordReset(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-      return null; 
+      return null;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'user-not-found':
@@ -95,9 +106,15 @@ class AuthService {
         email.split('@')[0];
   }
 
+  static Future<String?> getAgeRange(String email) async {
+    final prefs = await _getPrefs();
+    return prefs.getString('ageRange_${email.toLowerCase()}');
+  }
+
   static User? get currentUser => _auth.currentUser;
 
   static Future<void> signOut() async {
     await _auth.signOut();
+    currentAgeRange = null;
   }
 }

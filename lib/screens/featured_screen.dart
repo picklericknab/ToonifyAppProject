@@ -11,6 +11,7 @@ import 'romance_screen.dart';
 import 'action_screen.dart';
 import 'horror_screen.dart';
 import 'search_screen.dart';
+import '../services/auth_service.dart';
 
 class FeaturedScreen extends StatefulWidget {
   const FeaturedScreen({super.key});
@@ -26,16 +27,66 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
   static const double boxSpacing = 10.0;
   static const double boxBorderRadius = 20.0;
 
+  static const List<String> _bannedTags = [
+    'yaoi', 'boys\' love', 'bl', 'yuri', 'girls\' love', 'gl',
+    'sexual violence', 'ecchi', 'harem', 'reverse harem', 'incest',
+    'fetish', 'bdsm', 'mature', 'ero', 'erotica', 'pornographic',
+    'smut', 'nsfw', 'lewd', 'fan service', 'fanservice', 'nudity',
+    'sexual content', 'sex', 'rape', 'gore', 'graphic violence',
+    'violence', 'abuse', 'prostitution', 'cheating', 'adultery',
+    'monster girl', 'succubus', 'milf', 'loli', 'shotacon',
+    'crossdressing', 'gender bender', 'polyamory', 'magic sex',
+    'teacher student', 'student teacher', 'age gap',
+  ];
+
   Map<String, dynamic>? hotManga;
   bool isLoadingHot = true;
   List<Map<String, dynamic>> recommendedList = [];
   bool isLoadingRecommended = true;
 
+  String? _ageRange;
+
   @override
   void initState() {
     super.initState();
+    _loadAgeRangeAndFetch();
+  }
+
+  Future<void> _loadAgeRangeAndFetch() async {
+    final user = AuthService.currentUser;
+    if (user != null && user.email != null) {
+      _ageRange = await AuthService.getAgeRange(user.email!);
+    }
     fetchHotManga();
     fetchRecommendedManga();
+  }
+
+  List<String> _contentRatingsForAge(String? ageRange) {
+    if (ageRange == 'Under 13') {
+      return ['safe'];
+    } else if (ageRange == '13 – 17') {
+      return ['safe', 'suggestive'];
+    } else {
+      return ['safe', 'suggestive'];
+    }
+  }
+
+  bool _mangaHasBannedTag(Map<String, dynamic> manga) {
+    final attributes = manga['attributes'] as Map<String, dynamic>?;
+    if (attributes == null) return false;
+
+    final tags = attributes['tags'] as List?;
+    if (tags == null) return false;
+
+    for (final tag in tags) {
+      final tagName = (tag['attributes']?['name']?['en'] ?? '').toString().toLowerCase();
+      if (_bannedTags.contains(tagName)) return true;
+    }
+
+    final contentRating = (attributes['contentRating'] ?? '').toString().toLowerCase();
+    if (contentRating == 'pornographic' || contentRating == 'erotica') return true;
+
+    return false;
   }
 
   Future<String?> fetchCoverUrl(String mangaId, String coverId) async {
@@ -57,9 +108,12 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
   // Hot based na manga part
   Future<void> fetchHotManga() async {
     try {
+      final ratings = _contentRatingsForAge(_ageRange);
+      final ratingsQuery = ratings.map((r) => 'contentRating[]=$r').join('&');
+
       final response = await http.get(
         Uri.parse(
-          'https://api.mangadex.org/manga?limit=20&order[latestUploadedChapter]=desc&includes[]=cover_art&contentRating[]=safe&hasAvailableChapters=true&availableTranslatedLanguage[]=en',
+          'https://api.mangadex.org/manga?limit=20&order[latestUploadedChapter]=desc&includes[]=cover_art&$ratingsQuery',
         ),
       );
       if (response.statusCode == 200) {
@@ -67,6 +121,9 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
         final mangaList = data['data'] as List;
 
         for (final manga in mangaList) {
+
+          if (_mangaHasBannedTag(manga)) continue;
+
           final mangaId = manga['id'];
           final relationships = manga['relationships'] as List;
           final coverRel = relationships.firstWhere(
@@ -106,9 +163,12 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
   // Sa recommended na manga part
   Future<void> fetchRecommendedManga() async {
     try {
+      final ratings = _contentRatingsForAge(_ageRange);
+      final ratingsQuery = ratings.map((r) => 'contentRating[]=$r').join('&');
+
       final response = await http.get(
         Uri.parse(
-          'https://api.mangadex.org/manga?limit=20&order[createdAt]=desc&includes[]=cover_art&contentRating[]=safe&hasAvailableChapters=true&availableTranslatedLanguage[]=en',
+          'https://api.mangadex.org/manga?limit=20&order[createdAt]=desc&includes[]=cover_art&$ratingsQuery',
         ),
       );
       if (response.statusCode == 200) {
@@ -117,6 +177,9 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
 
         List<Map<String, dynamic>> results = [];
         for (final manga in mangaList) {
+
+          if (_mangaHasBannedTag(manga)) continue;
+
           if (results.length >= 5) break;
 
           final mangaId = manga['id'];
@@ -325,7 +388,6 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
               ),
             ),
           ),
-          // Mao ni ang Main part ari lang usba
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,7 +398,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 20.h),
-                      Transform.translate( // Mao ni ang Featured header
+                      Transform.translate(
                         offset: Offset(-14.w, -25.h),
                         child: Text(
                           'Featured',
@@ -349,7 +411,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 45.h), // Space ubos sa header
+                      SizedBox(height: 45.h),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -377,7 +439,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20.h), // Space sa ubos sa search bar
+                      SizedBox(height: 20.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -406,7 +468,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20.h), // Space sa ubos sa chips
+                      SizedBox(height: 20.h),
                       Text(
                         'Hot',
                         style: TextStyle(
@@ -417,7 +479,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 9.h), // Space ubos sa HOT
+                      SizedBox(height: 9.h),
                       isLoadingHot
                           ? Container(
                               width: double.infinity,
@@ -485,7 +547,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                                       ),
                               ),
                             ),
-                      SizedBox(height: 10.h), // Space sa ubos sa Hot banner
+                      SizedBox(height: 10.h),
                       Text(
                         'Recommended',
                         style: TextStyle(
@@ -496,7 +558,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 14.h), // Space sa ubos sa Recommended title
+                      SizedBox(height: 14.h),
                     ],
                   ),
                 ),
@@ -543,7 +605,6 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                           ],
                         ),
                         SizedBox(height: boxSpacing.h),
-                        // 2 large boxes sa ubos
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -570,7 +631,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20.h), // Space sa ubos sa grid
+                        SizedBox(height: 20.h),
                       ],
                     ),
                   ),
@@ -584,7 +645,6 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
   }
 }
 
-// Mao ni ang genre buttons sa romance etc
 class _GenreChip extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;

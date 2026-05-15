@@ -101,6 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       usernameCtrl.text.trim(),
       emailCtrl.text.trim(),
       passwordCtrl.text,
+      selectedAgeRange!,
     );
 
     if (mounted) {

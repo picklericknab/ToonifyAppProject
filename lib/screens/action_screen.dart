@@ -6,6 +6,7 @@ import 'package:toonifyapp/screens/history_screen.dart';
 import 'package:toonifyapp/screens/profile_screen.dart';
 import '../reader/app_description.dart';
 import 'home_screen.dart';
+import 'register_screen.dart';
 
 class ActionScreen extends StatefulWidget {
   const ActionScreen({super.key});
@@ -40,18 +41,49 @@ class _ActionScreenState extends State<ActionScreen> {
 
   late ScrollController _scrollController;
 
-  // Action tag ID sa MangaDex
   static const String _actionTagId =
       '391b0423-d847-456f-aff0-8b0cfc03066b';
 
+  final List<String> _banKeywords = [
+    'boys love',
+    'yaoi',
+    'yuri',
+    'shounen ai',
+    'shoujo ai'
+  ];
+
+  bool _isBanned(Map<String, dynamic> manga) {
+    try {
+      final attributes = manga['attributes'];
+      final tags = attributes['tags'] as List? ?? [];
+
+      final tagNames = tags.map((t) {
+        return (t['attributes']?['name']?['en'] ?? '').toString().toLowerCase();
+      }).toList();
+
+      for (final banned in _banKeywords) {
+        for (final name in tagNames) {
+          if (name.contains(banned)) {
+            return true;
+          }
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
   List<Map<String, dynamic>> get _filteredList {
-    if (_searchQuery.isEmpty) return actionList;
-    return actionList
-        .where((manga) => manga['title']
-            .toString()
-            .toLowerCase()
-            .contains(_searchQuery.toLowerCase()))
-        .toList();
+    if (_searchQuery.isEmpty) {
+      return actionList.where((m) => !_isBanned(m)).toList();
+    }
+    return actionList.where((manga) {
+      final titleMatch = manga['title']
+          .toString()
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase());
+
+      return titleMatch && !_isBanned(manga);
+    }).toList();
   }
 
   @override
@@ -126,6 +158,9 @@ class _ActionScreenState extends State<ActionScreen> {
 
         List<Map<String, dynamic>> results = [];
         for (final manga in mangaList) {
+
+          if (_isBanned(manga)) continue;
+
           final mangaId = manga['id'];
           final attributes = manga['attributes'];
 

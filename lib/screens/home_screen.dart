@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:toonifyapp/screens/horror_screen.dart';
 import 'package:toonifyapp/screens/profile_screen.dart';
+import '../services/auth_service.dart';
 import 'featured_screen.dart';
 import 'popular_screen.dart';
 import 'romance_screen.dart';
@@ -26,16 +27,65 @@ class _HomeScreenState extends State<HomeScreen> {
   static const double boxSpacing = 10.0;
   static const double boxBorderRadius = 20.0;
 
+  static const List<String> _bannedTags = [
+    'yaoi', 'boys\' love', 'bl', 'yuri', 'girls\' love', 'gl',
+    'sexual violence', 'ecchi', 'harem', 'reverse harem', 'incest',
+    'fetish', 'bdsm', 'mature', 'ero', 'erotica', 'pornographic',
+    'smut', 'nsfw', 'lewd', 'fan service', 'fanservice', 'nudity',
+    'sexual content', 'sex', 'rape', 'gore', 'graphic violence',
+    'violence', 'abuse', 'prostitution', 'cheating', 'adultery',
+    'monster girl', 'succubus', 'milf', 'loli', 'shotacon',
+    'crossdressing', 'gender bender', 'polyamory', 'magic sex',
+    'teacher student', 'student teacher', 'age gap',
+  ];
+
   String? featuredCoverUrl;
   bool isLoadingFeatured = true;
   List<String?> popularCoverUrls = [];
   bool isLoadingPopular = true;
+  String? _ageRange;
 
   @override
   void initState() {
     super.initState();
+    _loadAgeRangeAndFetch();
+  }
+
+  Future<void> _loadAgeRangeAndFetch() async {
+    final user = AuthService.currentUser;
+    if (user != null && user.email != null) {
+      _ageRange = await AuthService.getAgeRange(user.email!);
+    }
     fetchFeaturedCover();
     fetchPopularCovers();
+  }
+
+  List<String> _contentRatingsForAge(String? ageRange) {
+    if (ageRange == 'Under 13') {
+      return ['safe'];
+    } else if (ageRange == '13 – 17') {
+      return ['safe', 'suggestive'];
+    } else {
+      return ['safe', 'suggestive'];
+    }
+  }
+
+  bool _mangaHasBannedTag(Map<String, dynamic> manga) {
+    final attributes = manga['attributes'] as Map<String, dynamic>?;
+    if (attributes == null) return false;
+
+    final tags = attributes['tags'] as List?;
+    if (tags == null) return false;
+
+    for (final tag in tags) {
+      final tagName = (tag['attributes']?['name']?['en'] ?? '').toString().toLowerCase();
+      if (_bannedTags.contains(tagName)) return true;
+    }
+
+    final contentRating = (attributes['contentRating'] ?? '').toString().toLowerCase();
+    if (contentRating == 'pornographic' || contentRating == 'erotica') return true;
+
+    return false;
   }
 
   Future<String?> fetchCoverUrl(String mangaId, String coverId) async {
@@ -57,17 +107,33 @@ class _HomeScreenState extends State<HomeScreen> {
   // Sa feature banner na cover
   Future<void> fetchFeaturedCover() async {
     try {
+      final ratings = _contentRatingsForAge(_ageRange);
+      final ratingsQuery = ratings.map((r) => 'contentRating[]=$r').join('&');
+
       final response = await http.get(
         Uri.parse(
-          'https://api.mangadex.org/manga?limit=1&order[rating]=desc&includes[]=cover_art&contentRating[]=safe',
+          'https://api.mangadex.org/manga?limit=10&order[rating]=desc&includes[]=cover_art&$ratingsQuery',
         ),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final manga = data['data'][0];
-        final mangaId = manga['id'];
+        final mangaList = data['data'] as List;
 
-        final relationships = manga['relationships'] as List;
+        Map<String, dynamic>? selectedManga;
+        for (final manga in mangaList) {
+          if (!_mangaHasBannedTag(manga)) {
+            selectedManga = manga;
+            break;
+          }
+        }
+
+        if (selectedManga == null) {
+          if (mounted) setState(() => isLoadingFeatured = false);
+          return;
+        }
+
+        final mangaId = selectedManga['id'];
+        final relationships = selectedManga['relationships'] as List;
         final coverRel = relationships.firstWhere(
           (r) => r['type'] == 'cover_art',
           orElse: () => null,
@@ -94,9 +160,12 @@ class _HomeScreenState extends State<HomeScreen> {
   // Tung 5 ka box cover image
   Future<void> fetchPopularCovers() async {
     try {
+      final ratings = _contentRatingsForAge(_ageRange);
+      final ratingsQuery = ratings.map((r) => 'contentRating[]=$r').join('&');
+
       final response = await http.get(
         Uri.parse(
-          'https://api.mangadex.org/manga?limit=5&order[followedCount]=desc&includes[]=cover_art&contentRating[]=safe',
+          'https://api.mangadex.org/manga?limit=20&order[followedCount]=desc&includes[]=cover_art&$ratingsQuery',
         ),
       );
       if (response.statusCode == 200) {
@@ -105,6 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         List<String?> urls = [];
         for (final manga in mangaList) {
+          if (_mangaHasBannedTag(manga)) continue;
+
           final mangaId = manga['id'];
           final relationships = manga['relationships'] as List;
           final coverRel = relationships.firstWhere(
@@ -117,6 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
             coverUrl = await fetchCoverUrl(mangaId, coverRel['id']);
           }
           urls.add(coverUrl);
+
+          if (urls.length == 5) break;
         }
 
         if (mounted) {

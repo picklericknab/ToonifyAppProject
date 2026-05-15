@@ -30,6 +30,32 @@ class _SearchScreenState extends State<SearchScreen> {
   bool isLoading = false;
   bool hasSearched = false;
 
+  final Set<String> _bannedWords = {
+    'porn',
+    'hentai',
+    'loli',
+    'sex',
+    'boobs',
+    'dick',
+    'nsfw',
+    'ecchi',
+    'bl',
+    'yaoi',
+    'yuri',
+    'boyslove',
+    'girlslove'
+  };
+
+  bool _isBannedQuery(String input) {
+    final q = input.toLowerCase();
+    return _bannedWords.any((w) => q.contains(w));
+  }
+
+  bool _isBannedTitle(String title) {
+    final t = title.toLowerCase();
+    return _bannedWords.any((w) => t.contains(w));
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -54,6 +80,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> searchManga(String query) async {
     if (query.trim().isEmpty) return;
+
+    if (_isBannedQuery(query)) {
+      setState(() {
+        isLoading = false;
+        hasSearched = true;
+        searchResults = [];
+      });
+      return;
+    }
 
     setState(() {
       isLoading = true;
@@ -102,10 +137,17 @@ class _SearchScreenState extends State<SearchScreen> {
             coverUrl = await fetchCoverUrl(mangaId, coverRel['id']);
           }
 
+          final title = (attributes['title']['en'] ??
+              attributes['title'].values.first)
+              .toString();
+
+          if (_isBannedTitle(title)) {
+            continue;
+          }
+
           results.add({
             'id': mangaId,
-            'title': attributes['title']['en'] ??
-                attributes['title'].values.first,
+            'title': title,
             'description': shortDesc,
             'coverUrl': coverUrl,
           });
@@ -147,7 +189,6 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Cover image sa wala
             ClipRRect(
               borderRadius: BorderRadius.circular(coverBorderRadius),
               child: manga['coverUrl'] != null
@@ -302,7 +343,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      Transform.translate( // Mao ni ang Search header
+                      Transform.translate(
                         offset: const Offset(-14, -25),
                         child: const Text(
                           'Search',
@@ -373,7 +414,6 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             )
                           : searchResults.isEmpty
-                              // Kung walay results
                               ? const Center(
                                   child: Text(
                                     'No results found',
@@ -398,7 +438,6 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          // Back button
           Positioned(
             top: 0,
             left: 355,
