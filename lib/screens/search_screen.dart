@@ -30,30 +30,59 @@ class _SearchScreenState extends State<SearchScreen> {
   bool isLoading = false;
   bool hasSearched = false;
 
-  final Set<String> _bannedWords = {
+  final List<String> bannedWords = [
     'porn',
     'hentai',
     'loli',
     'sex',
     'boobs',
     'dick',
+    'penis',
+    'vagina',
+    'pussy',
+    'nude',
+    'naked',
+    'cum',
+    'milf',
+    'bdsm',
+    'fetish',
+    'horny',
     'nsfw',
     'ecchi',
-    'bl',
+    'smut',
     'yaoi',
     'yuri',
+    'bl',
+    'gl',
+    'boys love',
+    'girls love',
     'boyslove',
-    'girlslove'
-  };
+    'girlslove',
+    'shota',
+    'rape',
+    'incest',
+    'fuck',
+    'fucking',
+    'anal',
+    'oral',
+    'blowjob',
+    'boob',
+    'tits',
+    'ass',
+    'thigh',
+    'harem',
+  ];
 
-  bool _isBannedQuery(String input) {
-    final q = input.toLowerCase();
-    return _bannedWords.any((w) => q.contains(w));
-  }
+  bool containsBannedWord(String text) {
+    final lower = text.toLowerCase();
 
-  bool _isBannedTitle(String title) {
-    final t = title.toLowerCase();
-    return _bannedWords.any((w) => t.contains(w));
+    for (final word in bannedWords) {
+      if (lower.contains(word)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @override
@@ -81,10 +110,10 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> searchManga(String query) async {
     if (query.trim().isEmpty) return;
 
-    if (_isBannedQuery(query)) {
+    if (containsBannedWord(query)) {
       setState(() {
-        isLoading = false;
         hasSearched = true;
+        isLoading = false;
         searchResults = [];
       });
       return;
@@ -106,6 +135,11 @@ class _SearchScreenState extends State<SearchScreen> {
           '&contentRating[]=safe'
           '&hasAvailableChapters=true'
           '&availableTranslatedLanguage[]=en'
+          '&excludedTags[]=5920b825-4181-4a17-beeb-9918b0ff7a30'
+          '&excludedTags[]=a3c67850-4684-404e-9b7f-c69850ee5da6'
+          '&excludedTags[]=2d1f5d56-a1e5-4d0d-a961-2193588b08ec'
+          '&excludedTags[]=f04b3eb7-56d6-4c4b-9fdd-3a7f8b9c3407'
+          '&excludedTagsMode=AND'
           '&order[relevance]=desc',
         ),
       );
@@ -115,34 +149,59 @@ class _SearchScreenState extends State<SearchScreen> {
         final mangaList = data['data'] as List;
 
         List<Map<String, dynamic>> results = [];
+
         for (final manga in mangaList) {
           final mangaId = manga['id'];
           final attributes = manga['attributes'];
+
+          final title = attributes['title']['en'] ??
+              attributes['title'].values.first;
 
           String fullDesc = attributes['description']['en'] ??
               (attributes['description'].isNotEmpty
                   ? attributes['description'].values.first
                   : 'No description available.');
+
+          final relationships = manga['relationships'] as List;
+
+          final tags = attributes['tags'] as List;
+
+          bool isBanned = false;
+
+          if (containsBannedWord(title.toString())) {
+            isBanned = true;
+          }
+
+          if (containsBannedWord(fullDesc.toString())) {
+            isBanned = true;
+          }
+
+          for (final tag in tags) {
+            final tagName =
+                tag['attributes']['name']['en']?.toString().toLowerCase() ?? '';
+
+            if (containsBannedWord(tagName)) {
+              isBanned = true;
+              break;
+            }
+          }
+
+          if (isBanned) {
+            continue;
+          }
+
           final sentences = fullDesc.split(RegExp(r'(?<=[.!?])\s+'));
           final shortDesc = sentences.take(2).join(' ');
 
-          final relationships = manga['relationships'] as List;
           final coverRel = relationships.firstWhere(
             (r) => r['type'] == 'cover_art',
             orElse: () => null,
           );
 
           String? coverUrl;
+
           if (coverRel != null) {
             coverUrl = await fetchCoverUrl(mangaId, coverRel['id']);
-          }
-
-          final title = (attributes['title']['en'] ??
-              attributes['title'].values.first)
-              .toString();
-
-          if (_isBannedTitle(title)) {
-            continue;
           }
 
           results.add({
@@ -159,10 +218,20 @@ class _SearchScreenState extends State<SearchScreen> {
             isLoading = false;
           });
         }
+      } else {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
       }
     } catch (e) {
       debugPrint('Sayop sa pagkuha sa search results: $e');
-      if (mounted) setState(() => isLoading = false);
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -189,6 +258,7 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Cover image sa wala
             ClipRRect(
               borderRadius: BorderRadius.circular(coverBorderRadius),
               child: manga['coverUrl'] != null
@@ -343,7 +413,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      Transform.translate(
+                      Transform.translate( // Mao ni ang Search header
                         offset: const Offset(-14, -25),
                         child: const Text(
                           'Search',
@@ -414,6 +484,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             )
                           : searchResults.isEmpty
+                              // Kung walay results
                               ? const Center(
                                   child: Text(
                                     'No results found',
@@ -438,6 +509,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
+          // Back button
           Positioned(
             top: 0,
             left: 355,
